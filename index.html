@@ -4,401 +4,816 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#6d5dfc">
-  <title>Flashcards</title>
+  <meta name="description" content="Flashcards com repetição inteligente e suporte offline.">
+
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
+
+  <title>Flashcards</title>
 </head>
+
 <body>
 
-<div class="bg-glow glow-1"></div>
-<div class="bg-glow glow-2"></div>
-
-<header class="topbar">
-  <div class="brand">
-    <div class="logo">✦</div>
-    <div>
-      <h1>Flashcards</h1>
-      <p>Aprenda melhor. Revise no momento certo.</p>
-    </div>
-  </div>
-
-  <button id="themeBtn" class="icon-btn" type="button" title="Alternar tema">☾</button>
-</header>
-
-<main class="app-shell">
-
-  <section class="stats-grid">
-    <article class="stat">
-      <div class="stat-icon">▣</div>
-      <div><strong id="totalCount">0</strong><span>Flashcards</span></div>
-    </article>
-
-    <article class="stat highlight">
-      <div class="stat-icon">↻</div>
-      <div><strong id="dueCount">0</strong><span>Para revisar</span></div>
-    </article>
-
-    <article class="stat">
-      <div class="stat-icon">✓</div>
-      <div><strong id="masteredCount">0</strong><span>Bem fixados</span></div>
-    </article>
-
-    <article class="stat">
-      <div class="stat-icon">◷</div>
-      <div><strong id="todayCount">0</strong><span>Revistos hoje</span></div>
-    </article>
-  </section>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
 
 
-  <section class="panel actions-panel">
-    <div class="action-main">
-      <button id="studyBtn" class="btn primary big" type="button">
-        <span>▶</span> Estudar agora
-      </button>
+  <header class="topbar">
 
-      <button id="newBtn" class="btn big" type="button">
-        ＋ Novo flashcard
-      </button>
-    </div>
+    <div class="brand">
 
-    <div class="action-secondary">
-      <button id="shuffleBtn" class="btn ghost" type="button">⇄ Embaralhar</button>
-      <button id="exportBtn" class="btn ghost" type="button">↓ Backup</button>
-      <button id="importBtn" class="btn ghost" type="button">↑ Importar</button>
-      <input id="importInput" type="file" accept=".json,application/json" hidden>
-    </div>
-  </section>
-
-
-  <section id="editorPanel" class="panel editor hidden">
-
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">EDITOR</span>
-        <h2 id="editorTitle">Novo flashcard</h2>
-        <p id="editorDesc">Crie a pergunta, resposta e adicione uma imagem se quiser.</p>
+      <div class="logo">
+        ✦
       </div>
-
-      <button id="closeEditorBtn" class="icon-btn small" type="button">×</button>
-    </div>
-
-
-    <div class="editor-mode-bar">
-      <div>
-        <strong>Criação em lote</strong>
-        <span>Crie vários flashcards usando a mesma pergunta.</span>
-      </div>
-
-      <button id="bulkToggle" class="btn bulk-toggle" type="button">
-        ▦ Modo lote por imagens
-      </button>
-    </div>
-
-
-    <form id="cardForm">
-
-      <input id="editId" type="hidden">
-
-      <div class="field">
-        <div class="field-head">
-          <label for="question">Pergunta</label>
-          <span>Obrigatório</span>
-        </div>
-
-        <textarea
-          id="question"
-          rows="4"
-          maxlength="5000"
-          placeholder="O que você deseja memorizar?"
-          required></textarea>
-      </div>
-
-
-      <!-- MODO NORMAL -->
-
-      <div id="singleAnswerField" class="field">
-        <div class="field-head">
-          <label for="answer">Resposta</label>
-          <span>Obrigatório</span>
-        </div>
-
-        <textarea
-          id="answer"
-          rows="6"
-          maxlength="10000"
-          placeholder="Digite a resposta..."
-          required></textarea>
-      </div>
-
-
-      <div id="singleImageField" class="image-field">
-
-        <div class="image-info">
-          <div class="image-icon">🖼</div>
-
-          <div>
-            <strong>Imagem da pergunta</strong>
-            <span>Opcional · uma imagem por flashcard</span>
-          </div>
-        </div>
-
-        <div class="image-buttons">
-          <label class="btn" for="imageInput">Escolher imagem</label>
-
-          <input id="imageInput" type="file" accept="image/*" hidden>
-
-          <button
-            id="removeImageBtn"
-            class="btn danger-soft hidden"
-            type="button">
-            Remover
-          </button>
-        </div>
-
-        <div id="imagePreviewWrap" class="image-preview hidden">
-          <img id="imagePreview" alt="Prévia da imagem">
-        </div>
-
-      </div>
-
-
-      <!-- MODO LOTE -->
-
-      <section id="bulkArea" class="bulk-area hidden">
-
-        <div class="bulk-header">
-          <div>
-            <span class="eyebrow">MODO LOTE</span>
-            <h3>Imagens dos flashcards</h3>
-
-            <p>
-              Cada imagem será transformada em um flashcard separado,
-              todos usando a pergunta acima.
-            </p>
-          </div>
-
-          <label class="btn primary" for="bulkImageInput">
-            ＋ Selecionar imagens
-          </label>
-
-          <input
-            id="bulkImageInput"
-            type="file"
-            accept="image/*"
-            multiple
-            hidden>
-        </div>
-
-
-        <div class="bulk-summary">
-          <span id="bulkCount">Nenhuma imagem selecionada</span>
-          <small>Você pode selecionar várias fotos da galeria de uma vez.</small>
-        </div>
-
-
-        <div id="bulkItems" class="bulk-items"></div>
-
-      </section>
-
-
-      <div class="form-actions">
-        <button id="cancelBtn" class="btn ghost" type="button">
-          Cancelar
-        </button>
-
-        <button class="btn primary" type="submit">
-          Salvar flashcard
-        </button>
-      </div>
-
-    </form>
-
-  </section>
-
-
-  <section class="panel cards-panel">
-
-    <div class="section-head list-head">
 
       <div>
-        <span class="eyebrow">BIBLIOTECA</span>
-        <h2>Meus flashcards</h2>
-        <p id="listSubtitle">Nenhum cartão cadastrado.</p>
-      </div>
-
-      <div class="search-wrap">
-        <span>⌕</span>
-
-        <input
-          id="searchInput"
-          class="search"
-          type="search"
-          placeholder="Buscar flashcards...">
+        <h1>Flashcards</h1>
+        <p>Aprenda melhor. Revise no momento certo.</p>
       </div>
 
     </div>
 
 
-    <div id="cardList" class="card-list"></div>
-
-
-    <div id="emptyState" class="empty-state">
-
-      <div class="empty-visual">✦</div>
-
-      <h3>Comece seu primeiro flashcard</h3>
-
-      <p>
-        Cadastre perguntas e deixe o sistema organizar
-        as revisões para você.
-      </p>
-
-      <button id="emptyNewBtn" class="btn primary" type="button">
-        ＋ Criar flashcard
-      </button>
-
-    </div>
-
-  </section>
-
-</main>
-
-
-<!-- ESTUDO -->
-
-<section id="studyView" class="study-view" aria-hidden="true">
-
-  <header class="study-topbar">
-
-    <button id="exitStudyBtn" class="study-icon-btn" type="button">×</button>
-
-    <div class="study-progress-wrap">
-
-      <div class="study-meta">
-        <strong id="studyProgressText">1 de 10</strong>
-        <span id="studyDueText">0 concluídos</span>
-      </div>
-
-      <div class="progress">
-        <div id="studyProgressBar"></div>
-      </div>
-
-    </div>
-
-    <button id="fullscreenBtn" class="study-icon-btn" type="button">⛶</button>
+    <button
+      id="themeBtn"
+      class="icon-btn"
+      type="button"
+      title="Alternar tema"
+      aria-label="Alternar tema">
+      ☾
+    </button>
 
   </header>
 
 
-  <div class="study-scroll">
-
-    <main class="study-content">
-
-      <article id="studyCard" class="study-card">
-
-        <section class="question-section">
-
-          <div class="study-label">
-            <span class="label-dot"></span>
-            PERGUNTA
-          </div>
-
-          <div id="studyQuestion" class="study-question"></div>
-
-          <div class="study-image-wrap">
-            <img
-              id="studyImage"
-              class="study-image hidden"
-              alt="Imagem da pergunta">
-          </div>
-
-        </section>
+  <main class="app-shell">
 
 
-        <button id="showAnswerBtn" class="reveal-btn" type="button">
-          <span>Mostrar resposta</span>
-          <span class="reveal-arrow">↓</span>
-        </button>
+    <section
+      class="stats-grid"
+      aria-label="Resumo">
 
+      <article class="stat">
 
-        <section id="answerArea" class="answer-section hidden">
+        <div class="stat-icon">
+          ▣
+        </div>
 
-          <div class="answer-divider">
-            <span>RESPOSTA</span>
-          </div>
-
-          <div id="studyAnswer" class="study-answer"></div>
-
-        </section>
+        <div>
+          <strong id="totalCount">0</strong>
+          <span>Flashcards</span>
+        </div>
 
       </article>
 
 
-      <section id="ratingArea" class="rating-panel hidden">
+      <article class="stat highlight">
 
-        <div class="rating-title">
-          <strong>Como foi?</strong>
-          <span>Isso define quando esse cartão aparecerá novamente.</span>
+        <div class="stat-icon">
+          ↻
+        </div>
+
+        <div>
+          <strong id="dueCount">0</strong>
+          <span>Para revisar</span>
+        </div>
+
+      </article>
+
+
+      <article class="stat">
+
+        <div class="stat-icon">
+          ✓
+        </div>
+
+        <div>
+          <strong id="masteredCount">0</strong>
+          <span>Bem fixados</span>
+        </div>
+
+      </article>
+
+
+      <article class="stat">
+
+        <div class="stat-icon">
+          ◷
+        </div>
+
+        <div>
+          <strong id="todayCount">0</strong>
+          <span>Revistos hoje</span>
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <section class="panel actions-panel">
+
+      <div class="action-main">
+
+        <button
+          id="studyBtn"
+          class="btn primary big"
+          type="button">
+
+          <span>▶</span>
+          Estudar agora
+
+        </button>
+
+
+        <button
+          id="newBtn"
+          class="btn big"
+          type="button">
+
+          ＋ Novo flashcard
+
+        </button>
+
+      </div>
+
+
+      <div class="action-secondary">
+
+        <button
+          id="shuffleBtn"
+          class="btn ghost"
+          type="button">
+
+          ⇄ Embaralhar
+
+        </button>
+
+
+        <button
+          id="exportBtn"
+          class="btn ghost"
+          type="button">
+
+          ↓ Backup
+
+        </button>
+
+
+        <button
+          id="importBtn"
+          class="btn ghost"
+          type="button">
+
+          ↑ Importar
+
+        </button>
+
+
+        <input
+          id="importInput"
+          type="file"
+          accept=".json,application/json"
+          hidden>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="editorPanel"
+      class="panel editor hidden">
+
+
+      <div class="section-head">
+
+        <div>
+
+          <span class="eyebrow">
+            EDITOR
+          </span>
+
+          <h2 id="editorTitle">
+            Novo flashcard
+          </h2>
+
+          <p id="editorDesc">
+            Crie a pergunta, resposta e adicione uma imagem se quiser.
+          </p>
+
         </div>
 
 
-        <div class="rating-grid">
+        <button
+          id="closeEditorBtn"
+          class="icon-btn small"
+          type="button"
+          aria-label="Fechar editor">
 
-          <button class="rating again" data-rating="again" type="button">
-            <span class="rating-icon">×</span>
-            <div>
-              <strong>Errei</strong>
-              <small>Rever logo</small>
+          ×
+
+        </button>
+
+      </div>
+
+
+      <div class="editor-mode-bar">
+
+        <div>
+
+          <strong>
+            Criação em lote
+          </strong>
+
+          <span>
+            Crie vários flashcards usando a mesma pergunta.
+          </span>
+
+        </div>
+
+
+        <button
+          id="bulkToggle"
+          class="btn bulk-toggle"
+          type="button">
+
+          ▦ Modo lote por imagens
+
+        </button>
+
+      </div>
+
+
+      <form id="cardForm">
+
+
+        <input
+          id="editId"
+          type="hidden">
+
+
+        <div class="field">
+
+          <div class="field-head">
+
+            <label for="question">
+              Pergunta
+            </label>
+
+            <span>
+              Obrigatório
+            </span>
+
+          </div>
+
+
+          <textarea
+            id="question"
+            rows="4"
+            maxlength="5000"
+            placeholder="O que você deseja memorizar?"
+            required></textarea>
+
+        </div>
+
+
+        <div
+          id="singleAnswerField"
+          class="field">
+
+          <div class="field-head">
+
+            <label for="answer">
+              Resposta
+            </label>
+
+            <span>
+              Obrigatório
+            </span>
+
+          </div>
+
+
+          <textarea
+            id="answer"
+            rows="6"
+            maxlength="10000"
+            placeholder="Digite a resposta..."
+            required></textarea>
+
+        </div>
+
+
+        <div
+          id="singleImageField"
+          class="image-field">
+
+
+          <div class="image-info">
+
+            <div class="image-icon">
+              🖼
             </div>
-            <kbd>1</kbd>
+
+
+            <div>
+
+              <strong>
+                Imagem da pergunta
+              </strong>
+
+              <span>
+                Opcional · uma imagem por flashcard
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="image-buttons">
+
+            <label
+              class="btn"
+              for="imageInput">
+
+              Escolher imagem
+
+            </label>
+
+
+            <input
+              id="imageInput"
+              type="file"
+              accept="image/*"
+              hidden>
+
+
+            <button
+              id="removeImageBtn"
+              class="btn danger-soft hidden"
+              type="button">
+
+              Remover
+
+            </button>
+
+          </div>
+
+
+          <div
+            id="imagePreviewWrap"
+            class="image-preview hidden">
+
+            <img
+              id="imagePreview"
+              alt="Prévia da imagem">
+
+          </div>
+
+        </div>
+
+
+        <section
+          id="bulkArea"
+          class="bulk-area hidden">
+
+
+          <div class="bulk-header">
+
+            <div>
+
+              <span class="eyebrow">
+                MODO LOTE
+              </span>
+
+              <h3>
+                Imagens dos flashcards
+              </h3>
+
+              <p>
+                Cada imagem será um flashcard separado,
+                todos usando a mesma pergunta.
+              </p>
+
+            </div>
+
+
+            <label
+              class="btn primary"
+              for="bulkImageInput">
+
+              ＋ Selecionar imagens
+
+            </label>
+
+
+            <input
+              id="bulkImageInput"
+              type="file"
+              accept="image/*"
+              multiple
+              hidden>
+
+          </div>
+
+
+          <div class="bulk-summary">
+
+            <span id="bulkCount">
+              Nenhuma imagem selecionada
+            </span>
+
+            <small>
+              Selecione várias fotos da galeria de uma vez.
+            </small>
+
+          </div>
+
+
+          <div
+            id="bulkItems"
+            class="bulk-items">
+          </div>
+
+        </section>
+
+
+        <div class="form-actions">
+
+          <button
+            id="cancelBtn"
+            class="btn ghost"
+            type="button">
+
+            Cancelar
+
           </button>
 
 
-          <button class="rating hard" data-rating="hard" type="button">
-            <span class="rating-icon">!</span>
-            <div>
-              <strong>Difícil</strong>
-              <small>Intervalo curto</small>
-            </div>
-            <kbd>2</kbd>
-          </button>
+          <button
+            class="btn primary"
+            type="submit">
 
+            Salvar
 
-          <button class="rating good" data-rating="good" type="button">
-            <span class="rating-icon">✓</span>
-            <div>
-              <strong>Acertei</strong>
-              <small>Intervalo normal</small>
-            </div>
-            <kbd>3</kbd>
-          </button>
-
-
-          <button class="rating easy" data-rating="easy" type="button">
-            <span class="rating-icon">★</span>
-            <div>
-              <strong>Fácil</strong>
-              <small>Intervalo maior</small>
-            </div>
-            <kbd>4</kbd>
           </button>
 
         </div>
 
-        <p class="shortcut-hint">
-          Espaço para mostrar a resposta · 1–4 para avaliar
+      </form>
+
+    </section>
+
+
+    <section class="panel cards-panel">
+
+
+      <div class="section-head list-head">
+
+
+        <div>
+
+          <span class="eyebrow">
+            BIBLIOTECA
+          </span>
+
+          <h2>
+            Meus flashcards
+          </h2>
+
+          <p id="listSubtitle">
+            Nenhum cartão cadastrado.
+          </p>
+
+        </div>
+
+
+        <div class="search-wrap">
+
+          <span>
+            ⌕
+          </span>
+
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="Buscar flashcards..."
+            aria-label="Buscar flashcards">
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="cardList"
+        class="card-list">
+      </div>
+
+
+      <div
+        id="emptyState"
+        class="empty-state">
+
+
+        <div class="empty-visual">
+          ✦
+        </div>
+
+
+        <h3>
+          Comece seu primeiro flashcard
+        </h3>
+
+
+        <p>
+          Cadastre perguntas e deixe o sistema organizar
+          as revisões para você.
         </p>
 
-      </section>
 
-    </main>
+        <button
+          id="emptyNewBtn"
+          class="btn primary"
+          type="button">
 
+          ＋ Criar flashcard
+
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <section
+    id="studyView"
+    class="study-view"
+    aria-hidden="true">
+
+
+    <header class="study-topbar">
+
+
+      <button
+        id="exitStudyBtn"
+        class="study-icon-btn"
+        type="button"
+        aria-label="Sair do estudo">
+
+        ×
+
+      </button>
+
+
+      <div class="study-progress-wrap">
+
+
+        <div class="study-meta">
+
+          <strong id="studyProgressText">
+            1 de 10
+          </strong>
+
+          <span id="studyDueText">
+            0 concluídos
+          </span>
+
+        </div>
+
+
+        <div class="progress">
+
+          <div id="studyProgressBar">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <button
+        id="fullscreenBtn"
+        class="study-icon-btn"
+        type="button"
+        aria-label="Tela cheia">
+
+        ⛶
+
+      </button>
+
+    </header>
+
+
+    <div class="study-scroll">
+
+
+      <main class="study-content">
+
+
+        <article
+          id="studyCard"
+          class="study-card">
+
+
+          <section class="question-section">
+
+
+            <div class="study-label">
+
+              <span class="label-dot"></span>
+
+              PERGUNTA
+
+            </div>
+
+
+            <div
+              id="studyQuestion"
+              class="study-question">
+            </div>
+
+
+            <div class="study-image-wrap">
+
+              <img
+                id="studyImage"
+                class="study-image hidden"
+                alt="Imagem da pergunta">
+
+            </div>
+
+          </section>
+
+
+          <button
+            id="showAnswerBtn"
+            class="reveal-btn"
+            type="button">
+
+            <span>
+              Mostrar resposta
+            </span>
+
+            <span class="reveal-arrow">
+              ↓
+            </span>
+
+          </button>
+
+
+          <section
+            id="answerArea"
+            class="answer-section hidden">
+
+
+            <div class="answer-divider">
+
+              <span>
+                RESPOSTA
+              </span>
+
+            </div>
+
+
+            <div
+              id="studyAnswer"
+              class="study-answer">
+            </div>
+
+          </section>
+
+        </article>
+
+
+        <section
+          id="ratingArea"
+          class="rating-panel hidden">
+
+
+          <div class="rating-title">
+
+            <strong>
+              Como foi?
+            </strong>
+
+            <span>
+              Isso define quando esse cartão aparecerá novamente.
+            </span>
+
+          </div>
+
+
+          <div class="rating-grid">
+
+
+            <button
+              class="rating again"
+              data-rating="again"
+              type="button">
+
+              <span class="rating-icon">
+                ×
+              </span>
+
+              <div>
+                <strong>Errei</strong>
+                <small>Rever logo</small>
+              </div>
+
+              <kbd>1</kbd>
+
+            </button>
+
+
+            <button
+              class="rating hard"
+              data-rating="hard"
+              type="button">
+
+              <span class="rating-icon">
+                !
+              </span>
+
+              <div>
+                <strong>Difícil</strong>
+                <small>Intervalo curto</small>
+              </div>
+
+              <kbd>2</kbd>
+
+            </button>
+
+
+            <button
+              class="rating good"
+              data-rating="good"
+              type="button">
+
+              <span class="rating-icon">
+                ✓
+              </span>
+
+              <div>
+                <strong>Acertei</strong>
+                <small>Intervalo normal</small>
+              </div>
+
+              <kbd>3</kbd>
+
+            </button>
+
+
+            <button
+              class="rating easy"
+              data-rating="easy"
+              type="button">
+
+              <span class="rating-icon">
+                ★
+              </span>
+
+              <div>
+                <strong>Fácil</strong>
+                <small>Intervalo maior</small>
+              </div>
+
+              <kbd>4</kbd>
+
+            </button>
+
+          </div>
+
+
+          <p class="shortcut-hint">
+            Espaço para mostrar a resposta · 1–4 para avaliar
+          </p>
+
+        </section>
+
+      </main>
+
+    </div>
+
+  </section>
+
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite">
   </div>
 
-</section>
 
-<div id="toast" class="toast"></div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
