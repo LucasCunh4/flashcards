@@ -1,0 +1,12 @@
+{
+  "name": "Flashcards",
+  "short_name": "Flashcards",
+  "description": "Flashcards com repetição inteligente, imagens e modo offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f7fb",
+  "theme_color": "#6d5dfc",
+  "lang": "pt-BR"
+}
