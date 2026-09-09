@@ -4,6 +4,9 @@ const els={
   total:$('#totalCount'),due:$('#dueCount'),mastered:$('#masteredCount'),today:$('#todayCount'),
   studyBtn:$('#studyBtn'),shuffleBtn:$('#shuffleBtn'),newBtn:$('#newBtn'),emptyNewBtn:$('#emptyNewBtn'),
   exportBtn:$('#exportBtn'),importBtn:$('#importBtn'),importInput:$('#importInput'),
+  prImportBtn:$('#prImportBtn'),prImportPanel:$('#prImportPanel'),closePrImportBtn:$('#closePrImportBtn'),
+  prInput:$('#prInput'),prStatus:$('#prStatus'),prError:$('#prError'),prPreviewSection:$('#prPreviewSection'),
+  prPreview:$('#prPreview'),prPreviewInfo:$('#prPreviewInfo'),clearPrBtn:$('#clearPrBtn'),savePrBtn:$('#savePrBtn'),
   editor:$('#editorPanel'),editorTitle:$('#editorTitle'),editorDesc:$('#editorDesc'),bulkToggle:$('#bulkToggle'),
   form:$('#cardForm'),editId:$('#editId'),question:$('#question'),answer:$('#answer'),singleArea:$('#singleArea'),
   imageInput:$('#imageInput'),imageControls:$('#imageControls'),imagePreviewWrap:$('#imagePreviewWrap'),
@@ -23,7 +26,8 @@ const els={
 
 const DB_NAME='flashcards_app',STORE='cards',DAY=86400000,MINUTE=60000;
 let db,cards=[],editingImage=null,editingSvg=null,singleMediaMode='image',bulkMode=false,bulkEntries=[],
-studyQueue=[],studyCurrent=null,sessionTotal=0,sessionDone=new Set(),shuffled=false,toastTimer;
+parsedPrItems=[],prParseTimer,studyQueue=[],studyCurrent=null,sessionTotal=0,sessionDone=new Set(),
+shuffled=false,toastTimer;
 
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true})};req.onsuccess=()=>{db=req.result;resolve()};req.onerror=()=>reject(req.error)})}
 function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
@@ -62,9 +66,209 @@ function shuffle(a){
   return a;
 }
 
-/* ======================
+/* =========================
+   IMPORTADOR P: / R:
+========================= */
+
+function parsePR(text){
+  const lines=text.replace(/\r/g,'').split('\n');
+  const items=[];
+  let current=null,mode=null;
+
+  const finish=()=>{
+    if(!current)return;
+    current.question=current.question.trim();
+    current.answer=current.answer.trim();
+    items.push(current);
+    current=null;
+    mode=null;
+  };
+
+  lines.forEach((line,index)=>{
+    const p=line.match(/^\s*P\s*:\s*(.*)$/i);
+    const r=line.match(/^\s*R\s*:\s*(.*)$/i);
+
+    if(p){
+      finish();
+      current={question:p[1]||'',answer:'',line:index+1};
+      mode='question';
+      return;
+    }
+
+    if(r){
+      if(!current)current={question:'',answer:r[1]||'',line:index+1};
+      else current.answer=r[1]||'';
+      mode='answer';
+      return;
+    }
+
+    if(!current||!mode)return;
+
+    if(line.trim()){
+      if(mode==='question')current.question+=(current.question?'\n':'')+line.trimEnd();
+      else current.answer+=(current.answer?'\n':'')+line.trimEnd();
+    }
+  });
+
+  finish();
+
+  const errors=[];
+
+  items.forEach((item,index)=>{
+    if(!item.question&& !item.answer)
+      errors.push(`Flashcard ${index+1}: pergunta e resposta estão vazias.`);
+    else if(!item.question)
+      errors.push(`Flashcard ${index+1}: a pergunta está vazia.`);
+    else if(!item.answer)
+      errors.push(`Flashcard ${index+1}: a resposta está vazia.`);
+  });
+
+  return{items,errors};
+}
+
+function openPrImporter(){
+  closeEditor();
+  els.prImportPanel.classList.remove('hidden');
+  els.prImportPanel.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>els.prInput.focus(),200);
+}
+
+function closePrImporter(){
+  els.prImportPanel.classList.add('hidden');
+}
+
+function updatePrPreview(){
+  const raw=els.prInput.value;
+  const {items,errors}=parsePR(raw);
+
+  parsedPrItems=items;
+  els.prPreview.innerHTML='';
+
+  const count=items.length;
+  els.prStatus.querySelector('strong').textContent=count;
+  els.prStatus.querySelector('span').textContent=count===1?'flashcard identificado':'flashcards identificados';
+
+  els.prStatus.classList.remove('valid','invalid','neutral');
+
+  if(!raw.trim()){
+    els.prStatus.classList.add('neutral');
+    els.prError.classList.add('hidden');
+    els.prPreviewSection.classList.add('hidden');
+    els.savePrBtn.disabled=true;
+    return;
+  }
+
+  if(errors.length){
+    els.prStatus.classList.add('invalid');
+    els.prError.classList.remove('hidden');
+    els.prError.textContent=`${errors.length} problema${errors.length===1?' encontrado':'s encontrados'}: ${errors.slice(0,3).join(' · ')}${errors.length>3?' · …':''}`;
+    els.savePrBtn.disabled=true;
+  }else{
+    els.prStatus.classList.add(count?'valid':'invalid');
+    els.prError.classList.toggle('hidden',!!count);
+
+    if(!count){
+      els.prError.textContent='Não encontrei nenhum bloco iniciado por P: e R:.';
+      els.prError.classList.remove('hidden');
+    }
+
+    els.savePrBtn.disabled=!count;
+  }
+
+  if(!count){
+    els.prPreviewSection.classList.add('hidden');
+    return;
+  }
+
+  els.prPreviewSection.classList.remove('hidden');
+
+  const previewLimit=30;
+  const shown=items.slice(0,previewLimit);
+
+  els.prPreviewInfo.textContent=items.length>previewLimit
+    ?`Mostrando ${previewLimit} de ${items.length}`
+    :`${items.length} ${items.length===1?'flashcard':'flashcards'}`;
+
+  shown.forEach((item,index)=>{
+    const card=document.createElement('article');
+    card.className='pr-preview-card';
+
+    const num=document.createElement('div');
+    num.className='pr-preview-number';
+    num.textContent=index+1;
+
+    const content=document.createElement('div');
+    content.className='pr-preview-content';
+
+    const q=document.createElement('div');
+    q.className='pr-preview-q';
+    q.textContent=item.question||'Pergunta ausente';
+
+    const r=document.createElement('div');
+    r.className='pr-preview-r';
+    r.textContent=item.answer||'Resposta ausente';
+
+    content.append(q,r);
+    card.append(num,content);
+    els.prPreview.appendChild(card);
+  });
+}
+
+els.prImportBtn.onclick=openPrImporter;
+els.closePrImportBtn.onclick=closePrImporter;
+
+els.prInput.addEventListener('input',()=>{
+  clearTimeout(prParseTimer);
+  prParseTimer=setTimeout(updatePrPreview,180);
+});
+
+els.clearPrBtn.onclick=()=>{
+  els.prInput.value='';
+  parsedPrItems=[];
+  updatePrPreview();
+  els.prInput.focus();
+};
+
+els.savePrBtn.onclick=async()=>{
+  const {items,errors}=parsePR(els.prInput.value);
+
+  if(!items.length)return toast('Não encontrei nenhum flashcard.');
+  if(errors.length)return toast('Corrija os pares incompletos antes de importar.');
+
+  const t=now();
+
+  const newCards=items.map(item=>({
+    question:item.question,
+    answer:item.answer,
+    image:null,
+    svg:null,
+    createdAt:t,
+    updatedAt:t,
+    reviews:0,
+    lapses:0,
+    ease:2.3,
+    interval:0,
+    nextReview:0,
+    lastReviewed:null
+  }));
+
+  try{
+    await dbBulkAdd(newCards);
+    els.prInput.value='';
+    parsedPrItems=[];
+    updatePrPreview();
+    closePrImporter();
+    await loadCards();
+    toast(`${newCards.length} ${newCards.length===1?'flashcard importado':'flashcards importados'}.`);
+  }catch(e){
+    console.error(e);
+    toast('Não foi possível importar os flashcards.');
+  }
+};
+
+/* =========================
    SVG
-====================== */
+========================= */
 
 function sanitizeSvg(raw){
   if(!raw||!raw.trim())throw new Error('SVG vazio');
@@ -110,9 +314,9 @@ function extractSvgs(raw){
     .map(svg=>sanitizeSvg(svg.outerHTML));
 }
 
-/* ======================
+/* =========================
    RENDER
-====================== */
+========================= */
 
 async function loadCards(){
   cards=await dbGetAll();
@@ -152,6 +356,7 @@ function cardRow(c){
   row.className='list-card';
 
   const src=cardMedia(c);
+
   const media=src
     ?Object.assign(document.createElement('img'),{className:'thumb',src,alt:''})
     :Object.assign(document.createElement('div'),{className:'thumb-placeholder',textContent:'✦'});
@@ -178,25 +383,28 @@ function cardRow(c){
   rev.className='badge';
   rev.textContent=`${c.reviews||0} revisões`;
 
+  meta.append(status,rev);
+
   if(c.svg){
     const svgBadge=document.createElement('span');
     svgBadge.className='badge';
     svgBadge.textContent='SVG';
-    meta.append(status,rev,svgBadge);
-  }else meta.append(status,rev);
+    meta.append(svgBadge);
+  }
 
   content.append(q,a,meta);
 
   const actions=document.createElement('div');
   actions.className='card-actions';
 
-  const edit=document.createElement('button'),del=document.createElement('button');
+  const edit=document.createElement('button');
   edit.className='small-btn';
   edit.type='button';
   edit.title='Editar';
   edit.textContent='✎';
   edit.onclick=()=>openEditor(c.id);
 
+  const del=document.createElement('button');
   del.className='small-btn delete';
   del.type='button';
   del.title='Excluir';
@@ -209,9 +417,9 @@ function cardRow(c){
   return row;
 }
 
-/* ======================
+/* =========================
    EDITOR
-====================== */
+========================= */
 
 function setSingleMediaMode(mode){
   singleMediaMode=mode;
@@ -250,6 +458,8 @@ function setBulkMode(on){
 }
 
 function openEditor(id=null){
+  closePrImporter();
+
   els.editor.classList.remove('hidden');
   els.editor.scrollIntoView({behavior:'smooth',block:'start'});
   els.form.reset();
@@ -286,7 +496,9 @@ function openEditor(id=null){
       setSingleMediaMode('image');
       updateImagePreview();
     }
-  }else els.editorTitle.textContent='Novo flashcard';
+  }else{
+    els.editorTitle.textContent='Novo flashcard';
+  }
 
   setTimeout(()=>els.question.focus(),250);
 }
@@ -328,7 +540,7 @@ async function imageToDataURL(file,max=1600,quality=.82){
 
   try{
     const img=await new Promise((res,rej)=>{
-      const im=new Image;
+      const im=new Image();
       im.onload=()=>res(im);
       im.onerror=rej;
       im.src=url;
@@ -345,6 +557,7 @@ async function imageToDataURL(file,max=1600,quality=.82){
     const canvas=document.createElement('canvas');
     canvas.width=width;
     canvas.height=height;
+
     canvas.getContext('2d').drawImage(img,0,0,width,height);
 
     return canvas.toDataURL('image/jpeg',quality);
@@ -372,9 +585,9 @@ els.clearSvgBtn.onclick=()=>{
   updateSvgPreview();
 };
 
-/* ======================
-   LOTE
-====================== */
+/* =========================
+   LOTE IMAGEM / SVG
+========================= */
 
 function renderBulkEntries(){
   els.bulkItems.innerHTML='';
@@ -426,7 +639,10 @@ function renderBulkEntries(){
     ta.maxLength=10000;
     ta.placeholder='Resposta para este flashcard...';
     ta.value=entry.answer||'';
-    ta.addEventListener('input',()=>bulkEntries[index].answer=ta.value);
+
+    ta.addEventListener('input',()=>{
+      bulkEntries[index].answer=ta.value;
+    });
 
     body.append(head,ta);
     item.append(mediaWrap,body);
@@ -459,6 +675,7 @@ els.bulkImageInput.addEventListener('change',async()=>{
     }
 
     renderBulkEntries();
+
     toast(`${files.length} ${files.length===1?'imagem adicionada':'imagens adicionadas'}.`);
   }catch(e){
     console.error(e);
@@ -479,8 +696,7 @@ els.addBulkSvgBtn.onclick=()=>{
   try{
     const svgs=extractSvgs(els.bulkSvgInput.value);
 
-    if(!svgs.length)
-      return toast('Não encontrei nenhum código SVG.');
+    if(!svgs.length)return toast('Não encontrei nenhum código SVG.');
 
     svgs.forEach(svg=>{
       bulkEntries.push({
@@ -502,9 +718,9 @@ els.addBulkSvgBtn.onclick=()=>{
   }
 };
 
-/* ======================
-   SALVAR
-====================== */
+/* =========================
+   SALVAR FLASHCARD
+========================= */
 
 els.form.addEventListener('submit',async e=>{
   e.preventDefault();
@@ -516,8 +732,7 @@ els.form.addEventListener('submit',async e=>{
 
   try{
     if(bulkMode&&!id){
-      if(!bulkEntries.length)
-        return toast('Adicione pelo menos uma foto ou SVG.');
+      if(!bulkEntries.length)return toast('Adicione pelo menos uma foto ou SVG.');
 
       if(bulkEntries.some(x=>!x.answer.trim()))
         return toast('Preencha a resposta de todos os flashcards.');
@@ -540,6 +755,7 @@ els.form.addEventListener('submit',async e=>{
       }));
 
       await dbBulkAdd(items);
+
       toast(`${items.length} ${items.length===1?'flashcard criado':'flashcards criados'}.`);
     }else{
       const answer=els.answer.value.trim();
@@ -602,6 +818,7 @@ els.form.addEventListener('submit',async e=>{
 
 els.imageInput.addEventListener('change',async()=>{
   const file=els.imageInput.files[0];
+
   if(!file)return;
 
   try{
@@ -639,13 +856,12 @@ async function removeCard(id){
   await loadCards();
 }
 
-/* ======================
+/* =========================
    ESTUDO
-====================== */
+========================= */
 
 function startStudy(){
-  if(!cards.length)
-    return toast('Crie pelo menos um flashcard primeiro.');
+  if(!cards.length)return toast('Crie pelo menos um flashcard primeiro.');
 
   let due=cards.filter(isDue);
 
@@ -674,6 +890,7 @@ function nextStudyCard(){
   if(!studyQueue.length)return finishStudy();
 
   const id=studyQueue.shift();
+
   studyCurrent=cards.find(c=>c.id===id);
 
   if(!studyCurrent)return nextStudyCard();
@@ -760,6 +977,7 @@ async function rateCard(rating){
   await dbPut(c);
 
   const i=cards.findIndex(x=>x.id===c.id);
+
   if(i>=0)cards[i]=c;
 
   studyCurrent=null;
@@ -794,14 +1012,16 @@ els.studyBtn.onclick=startStudy;
 els.showAnswer.onclick=revealAnswer;
 els.exitStudy.onclick=closeStudy;
 
-$$('.rating').forEach(b=>
-  b.onclick=()=>rateCard(b.dataset.rating)
-);
+$$('.rating').forEach(b=>{
+  b.onclick=()=>rateCard(b.dataset.rating);
+});
 
 els.shuffleBtn.onclick=()=>{
   shuffled=!shuffled;
+
   els.shuffleBtn.classList.toggle('active-toggle',shuffled);
   els.shuffleBtn.innerHTML=shuffled?'✓ Embaralhado':'⇄ Embaralhar';
+
   toast(shuffled?'Ordem aleatória ativada.':'Ordem aleatória desativada.');
 };
 
@@ -834,9 +1054,9 @@ document.addEventListener('keydown',e=>{
     closeStudy();
 });
 
-/* ======================
+/* =========================
    BACKUP
-====================== */
+========================= */
 
 function download(name,text){
   const blob=new Blob([text],{type:'application/json'});
@@ -854,14 +1074,13 @@ function download(name,text){
 }
 
 els.exportBtn.onclick=()=>{
-  if(!cards.length)
-    return toast('Não há flashcards para exportar.');
+  if(!cards.length)return toast('Não há flashcards para exportar.');
 
   download(
     `flashcards-backup-${new Date().toISOString().slice(0,10)}.json`,
     JSON.stringify({
       app:'Flashcards',
-      version:2,
+      version:3,
       exportedAt:new Date().toISOString(),
       cards
     })
@@ -874,6 +1093,7 @@ els.importBtn.onclick=()=>els.importInput.click();
 
 els.importInput.onchange=async()=>{
   const file=els.importInput.files[0];
+
   els.importInput.value='';
 
   if(!file)return;
@@ -917,6 +1137,7 @@ els.importInput.onchange=async()=>{
     }));
 
     await loadCards();
+
     toast(`${items.length} flashcard${items.length===1?' importado':'s importados'}.`);
   }catch(e){
     console.error(e);
@@ -924,9 +1145,9 @@ els.importInput.onchange=async()=>{
   }
 };
 
-/* ======================
+/* =========================
    TEMA / PWA
-====================== */
+========================= */
 
 function applyTheme(theme){
   document.body.classList.toggle('dark',theme==='dark');
@@ -965,6 +1186,7 @@ async function registerServiceWorker(){
 
     await openDB();
     await loadCards();
+    updatePrPreview();
     await registerServiceWorker();
   }catch(e){
     console.error(e);
