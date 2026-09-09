@@ -23,6 +23,7 @@
   </header>
 
   <main class="app-shell">
+
     <section class="stats-grid">
       <article class="stat"><div class="stat-icon">▣</div><div><strong id="totalCount">0</strong><span>Flashcards</span></div></article>
       <article class="stat highlight"><div class="stat-icon">↻</div><div><strong id="dueCount">0</strong><span>Para revisar</span></div></article>
@@ -35,7 +36,9 @@
         <button id="studyBtn" class="btn primary big" type="button"><span>▶</span> Estudar agora</button>
         <button id="newBtn" class="btn big" type="button">＋ Novo flashcard</button>
       </div>
+
       <div class="action-secondary">
+        <button id="prImportBtn" class="btn ghost" type="button">≡ Importar P/R</button>
         <button id="shuffleBtn" class="btn ghost" type="button">⇄ Embaralhar</button>
         <button id="exportBtn" class="btn ghost" type="button">↓ Backup</button>
         <button id="importBtn" class="btn ghost" type="button">↑ Importar</button>
@@ -43,6 +46,64 @@
       </div>
     </section>
 
+    <!-- IMPORTAÇÃO AUTOMÁTICA P/R -->
+    <section id="prImportPanel" class="panel pr-import-panel hidden">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">IMPORTAÇÃO AUTOMÁTICA</span>
+          <h2>Importar perguntas e respostas</h2>
+          <p>Cole uma lista usando <strong>P:</strong> para pergunta e <strong>R:</strong> para resposta.</p>
+        </div>
+        <button id="closePrImportBtn" class="icon-btn small" type="button">×</button>
+      </div>
+
+      <div class="pr-example">
+        <span>FORMATO</span>
+        <code>P: Qual é a pergunta?<br>R: Esta é a resposta.<br><br>P: Outra pergunta?<br>R: Outra resposta.</code>
+      </div>
+
+      <div class="field pr-text-field">
+        <div class="field-head">
+          <label for="prInput">Lista de flashcards</label>
+          <span>Separação automática</span>
+        </div>
+        <textarea id="prInput" rows="14" spellcheck="false" placeholder="P: Pergunta 1
+R: Resposta 1
+
+P: Pergunta 2
+R: Resposta 2
+
+P: Pergunta 3
+R: Resposta 3"></textarea>
+      </div>
+
+      <div class="pr-toolbar">
+        <div id="prStatus" class="pr-status neutral">
+          <strong>0</strong>
+          <span>flashcards identificados</span>
+        </div>
+
+        <div class="pr-actions">
+          <button id="clearPrBtn" class="btn ghost" type="button">Limpar</button>
+          <button id="savePrBtn" class="btn primary" type="button" disabled>Importar flashcards</button>
+        </div>
+      </div>
+
+      <div id="prError" class="pr-error hidden"></div>
+
+      <div id="prPreviewSection" class="pr-preview-section hidden">
+        <div class="pr-preview-head">
+          <div>
+            <span class="eyebrow">PRÉVIA</span>
+            <h3>Flashcards identificados</h3>
+          </div>
+          <span id="prPreviewInfo"></span>
+        </div>
+        <div id="prPreview" class="pr-preview"></div>
+      </div>
+    </section>
+
+    <!-- EDITOR -->
     <section id="editorPanel" class="panel editor hidden">
       <div class="section-head">
         <div>
@@ -66,7 +127,6 @@
           <textarea id="question" rows="4" maxlength="5000" placeholder="O que você deseja memorizar?" required></textarea>
         </div>
 
-        <!-- MODO NORMAL -->
         <div id="singleArea">
           <div class="field">
             <div class="field-head"><label for="answer">Resposta</label><span>Obrigatório</span></div>
@@ -89,15 +149,20 @@
                 <input id="imageInput" type="file" accept="image/*" hidden>
                 <button id="removeImageBtn" class="btn danger-soft hidden" type="button">Remover</button>
               </div>
-              <div id="imagePreviewWrap" class="image-preview hidden"><img id="imagePreview" alt="Prévia da imagem"></div>
+
+              <div id="imagePreviewWrap" class="image-preview hidden">
+                <img id="imagePreview" alt="Prévia da imagem">
+              </div>
             </div>
 
             <div id="svgControls" class="hidden">
               <textarea id="svgInput" class="svg-input" rows="7" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>'></textarea>
+
               <div class="svg-actions">
                 <button id="previewSvgBtn" class="btn" type="button">Visualizar SVG</button>
                 <button id="clearSvgBtn" class="btn danger-soft" type="button">Limpar</button>
               </div>
+
               <div id="svgPreviewWrap" class="svg-preview hidden">
                 <span>Prévia</span>
                 <img id="svgPreview" alt="Prévia do SVG">
@@ -106,7 +171,7 @@
           </div>
         </div>
 
-        <!-- MODO LOTE -->
+        <!-- LOTE -->
         <section id="bulkArea" class="bulk-area hidden">
           <div class="bulk-header">
             <div>
@@ -124,10 +189,12 @@
 
           <div id="bulkSvgBox" class="bulk-svg-box hidden">
             <strong>Adicionar códigos SVG</strong>
-            <p>Cole um ou vários códigos <code>&lt;svg&gt;...&lt;/svg&gt;</code>. O app separa cada bandeira automaticamente.</p>
+            <p>Cole um ou vários códigos <code>&lt;svg&gt;...&lt;/svg&gt;</code>. O app separa cada um automaticamente.</p>
+
             <textarea id="bulkSvgInput" rows="10" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>
 
 <svg viewBox="0 0 540 180">...</svg>'></textarea>
+
             <div class="svg-actions">
               <button id="addBulkSvgBtn" class="btn primary" type="button">Adicionar SVGs</button>
               <button id="cancelBulkSvgBtn" class="btn ghost" type="button">Fechar</button>
@@ -149,10 +216,19 @@
       </form>
     </section>
 
+    <!-- BIBLIOTECA -->
     <section class="panel cards-panel">
       <div class="section-head list-head">
-        <div><span class="eyebrow">BIBLIOTECA</span><h2>Meus flashcards</h2><p id="listSubtitle">Nenhum cartão cadastrado.</p></div>
-        <div class="search-wrap"><span>⌕</span><input id="searchInput" class="search" type="search" placeholder="Buscar flashcards..."></div>
+        <div>
+          <span class="eyebrow">BIBLIOTECA</span>
+          <h2>Meus flashcards</h2>
+          <p id="listSubtitle">Nenhum cartão cadastrado.</p>
+        </div>
+
+        <div class="search-wrap">
+          <span>⌕</span>
+          <input id="searchInput" class="search" type="search" placeholder="Buscar flashcards...">
+        </div>
       </div>
 
       <div id="cardList" class="card-list"></div>
@@ -164,6 +240,7 @@
         <button id="emptyNewBtn" class="btn primary" type="button">＋ Criar flashcard</button>
       </div>
     </section>
+
   </main>
 
   <!-- ESTUDO -->
@@ -172,7 +249,10 @@
       <button id="exitStudyBtn" class="study-icon-btn" type="button">×</button>
 
       <div class="study-progress-wrap">
-        <div class="study-meta"><strong id="studyProgressText">1 de 10</strong><span id="studyDueText">0 concluídos</span></div>
+        <div class="study-meta">
+          <strong id="studyProgressText">1 de 10</strong>
+          <span id="studyDueText">0 concluídos</span>
+        </div>
         <div class="progress"><div id="studyProgressBar"></div></div>
       </div>
 
@@ -185,10 +265,14 @@
           <section class="question-section">
             <div class="study-label"><span class="label-dot"></span>PERGUNTA</div>
             <div id="studyQuestion" class="study-question"></div>
-            <div class="study-image-wrap"><img id="studyImage" class="study-image hidden" alt="Imagem da pergunta"></div>
+            <div class="study-image-wrap">
+              <img id="studyImage" class="study-image hidden" alt="Imagem da pergunta">
+            </div>
           </section>
 
-          <button id="showAnswerBtn" class="reveal-btn" type="button"><span>Mostrar resposta</span><span class="reveal-arrow">↓</span></button>
+          <button id="showAnswerBtn" class="reveal-btn" type="button">
+            <span>Mostrar resposta</span><span class="reveal-arrow">↓</span>
+          </button>
 
           <section id="answerArea" class="answer-section hidden">
             <div class="answer-divider"><span>RESPOSTA</span></div>
@@ -197,7 +281,10 @@
         </article>
 
         <section id="ratingArea" class="rating-panel hidden">
-          <div class="rating-title"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
+          <div class="rating-title">
+            <strong>Como foi?</strong>
+            <span>Isso define quando esse cartão aparecerá novamente.</span>
+          </div>
 
           <div class="rating-grid">
             <button class="rating again" data-rating="again" type="button"><span class="rating-icon">×</span><div><strong>Errei</strong><small>Rever logo</small></div><kbd>1</kbd></button>
