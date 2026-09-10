@@ -19,11 +19,10 @@
       <div class="logo">✦</div>
       <div><h1>Flashcards</h1><p>Aprenda melhor. Revise no momento certo.</p></div>
     </div>
-    <button id="themeBtn" class="icon-btn" type="button" title="Alternar tema" aria-label="Alternar tema">☾</button>
+    <button id="themeBtn" class="icon-btn" type="button" title="Alternar tema">☾</button>
   </header>
 
   <main class="app-shell">
-
     <section class="stats-grid">
       <article class="stat"><div class="stat-icon">▣</div><div><strong id="totalCount">0</strong><span>Flashcards</span></div></article>
       <article class="stat highlight"><div class="stat-icon">↻</div><div><strong id="dueCount">0</strong><span>Para revisar</span></div></article>
@@ -46,7 +45,7 @@
       </div>
     </section>
 
-    <!-- IMPORTAÇÃO AUTOMÁTICA P/R -->
+    <!-- IMPORTAR P/R -->
     <section id="prImportPanel" class="panel pr-import-panel hidden">
       <div class="section-head">
         <div>
@@ -63,26 +62,16 @@
       </div>
 
       <div class="field pr-text-field">
-        <div class="field-head">
-          <label for="prInput">Lista de flashcards</label>
-          <span>Separação automática</span>
-        </div>
+        <div class="field-head"><label for="prInput">Lista de flashcards</label><span>Separação automática</span></div>
         <textarea id="prInput" rows="14" spellcheck="false" placeholder="P: Pergunta 1
 R: Resposta 1
 
 P: Pergunta 2
-R: Resposta 2
-
-P: Pergunta 3
-R: Resposta 3"></textarea>
+R: Resposta 2"></textarea>
       </div>
 
       <div class="pr-toolbar">
-        <div id="prStatus" class="pr-status neutral">
-          <strong>0</strong>
-          <span>flashcards identificados</span>
-        </div>
-
+        <div id="prStatus" class="pr-status neutral"><strong>0</strong><span>flashcards identificados</span></div>
         <div class="pr-actions">
           <button id="clearPrBtn" class="btn ghost" type="button">Limpar</button>
           <button id="savePrBtn" class="btn primary" type="button" disabled>Importar flashcards</button>
@@ -93,10 +82,7 @@ R: Resposta 3"></textarea>
 
       <div id="prPreviewSection" class="pr-preview-section hidden">
         <div class="pr-preview-head">
-          <div>
-            <span class="eyebrow">PRÉVIA</span>
-            <h3>Flashcards identificados</h3>
-          </div>
+          <div><span class="eyebrow">PRÉVIA</span><h3>Flashcards identificados</h3></div>
           <span id="prPreviewInfo"></span>
         </div>
         <div id="prPreview" class="pr-preview"></div>
@@ -134,9 +120,7 @@ R: Resposta 3"></textarea>
           </div>
 
           <div class="media-field">
-            <div class="media-title">
-              <div><strong>Imagem da pergunta</strong><span>Opcional · escolha foto ou código SVG</span></div>
-            </div>
+            <div class="media-title"><strong>Imagem da pergunta</strong><span>Opcional · escolha foto ou código SVG</span></div>
 
             <div class="media-tabs">
               <button class="media-tab active" data-media="image" type="button">🖼 Imagem</button>
@@ -149,24 +133,16 @@ R: Resposta 3"></textarea>
                 <input id="imageInput" type="file" accept="image/*" hidden>
                 <button id="removeImageBtn" class="btn danger-soft hidden" type="button">Remover</button>
               </div>
-
-              <div id="imagePreviewWrap" class="image-preview hidden">
-                <img id="imagePreview" alt="Prévia da imagem">
-              </div>
+              <div id="imagePreviewWrap" class="image-preview hidden"><img id="imagePreview" alt="Prévia da imagem"></div>
             </div>
 
             <div id="svgControls" class="hidden">
               <textarea id="svgInput" class="svg-input" rows="7" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>'></textarea>
-
               <div class="svg-actions">
                 <button id="previewSvgBtn" class="btn" type="button">Visualizar SVG</button>
                 <button id="clearSvgBtn" class="btn danger-soft" type="button">Limpar</button>
               </div>
-
-              <div id="svgPreviewWrap" class="svg-preview hidden">
-                <span>Prévia</span>
-                <img id="svgPreview" alt="Prévia do SVG">
-              </div>
+              <div id="svgPreviewWrap" class="svg-preview hidden"><span>Prévia</span><img id="svgPreview" alt="Prévia do SVG"></div>
             </div>
           </div>
         </div>
@@ -189,23 +165,17 @@ R: Resposta 3"></textarea>
 
           <div id="bulkSvgBox" class="bulk-svg-box hidden">
             <strong>Adicionar códigos SVG</strong>
-            <p>Cole um ou vários códigos <code>&lt;svg&gt;...&lt;/svg&gt;</code>. O app separa cada um automaticamente.</p>
-
+            <p>Cole um ou vários códigos <code>&lt;svg&gt;...&lt;/svg&gt;</code>.</p>
             <textarea id="bulkSvgInput" rows="10" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>
 
 <svg viewBox="0 0 540 180">...</svg>'></textarea>
-
             <div class="svg-actions">
               <button id="addBulkSvgBtn" class="btn primary" type="button">Adicionar SVGs</button>
               <button id="cancelBulkSvgBtn" class="btn ghost" type="button">Fechar</button>
             </div>
           </div>
 
-          <div class="bulk-summary">
-            <span id="bulkCount">Nenhum item adicionado</span>
-            <small>Fotos e SVGs podem ser usados juntos.</small>
-          </div>
-
+          <div class="bulk-summary"><span id="bulkCount">Nenhum item adicionado</span><small>Fotos e SVGs podem ser usados juntos.</small></div>
           <div id="bulkItems" class="bulk-items"></div>
         </section>
 
@@ -217,7 +187,7 @@ R: Resposta 3"></textarea>
     </section>
 
     <!-- BIBLIOTECA -->
-    <section class="panel cards-panel">
+    <section id="cardsPanel" class="panel cards-panel">
       <div class="section-head list-head">
         <div>
           <span class="eyebrow">BIBLIOTECA</span>
@@ -225,9 +195,27 @@ R: Resposta 3"></textarea>
           <p id="listSubtitle">Nenhum cartão cadastrado.</p>
         </div>
 
-        <div class="search-wrap">
-          <span>⌕</span>
-          <input id="searchInput" class="search" type="search" placeholder="Buscar flashcards...">
+        <div class="library-tools">
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input id="searchInput" class="search" type="search" placeholder="Buscar flashcards...">
+          </div>
+
+          <button id="selectModeBtn" class="btn ghost" type="button">☑ Selecionar</button>
+        </div>
+      </div>
+
+      <!-- BARRA DE SELEÇÃO -->
+      <div id="selectionToolbar" class="selection-toolbar hidden">
+        <div class="selection-info">
+          <strong id="selectionCount">0</strong>
+          <span>selecionados</span>
+        </div>
+
+        <div class="selection-actions">
+          <button id="selectAllBtn" class="btn ghost" type="button">Selecionar tudo</button>
+          <button id="deleteSelectedBtn" class="btn delete-multiple" type="button" disabled>🗑 Excluir selecionados</button>
+          <button id="cancelSelectionBtn" class="btn ghost" type="button">Cancelar</button>
         </div>
       </div>
 
@@ -240,7 +228,6 @@ R: Resposta 3"></textarea>
         <button id="emptyNewBtn" class="btn primary" type="button">＋ Criar flashcard</button>
       </div>
     </section>
-
   </main>
 
   <!-- ESTUDO -->
@@ -249,10 +236,7 @@ R: Resposta 3"></textarea>
       <button id="exitStudyBtn" class="study-icon-btn" type="button">×</button>
 
       <div class="study-progress-wrap">
-        <div class="study-meta">
-          <strong id="studyProgressText">1 de 10</strong>
-          <span id="studyDueText">0 concluídos</span>
-        </div>
+        <div class="study-meta"><strong id="studyProgressText">1 de 10</strong><span id="studyDueText">0 concluídos</span></div>
         <div class="progress"><div id="studyProgressBar"></div></div>
       </div>
 
@@ -265,14 +249,10 @@ R: Resposta 3"></textarea>
           <section class="question-section">
             <div class="study-label"><span class="label-dot"></span>PERGUNTA</div>
             <div id="studyQuestion" class="study-question"></div>
-            <div class="study-image-wrap">
-              <img id="studyImage" class="study-image hidden" alt="Imagem da pergunta">
-            </div>
+            <div class="study-image-wrap"><img id="studyImage" class="study-image hidden" alt="Imagem da pergunta"></div>
           </section>
 
-          <button id="showAnswerBtn" class="reveal-btn" type="button">
-            <span>Mostrar resposta</span><span class="reveal-arrow">↓</span>
-          </button>
+          <button id="showAnswerBtn" class="reveal-btn" type="button"><span>Mostrar resposta</span><span class="reveal-arrow">↓</span></button>
 
           <section id="answerArea" class="answer-section hidden">
             <div class="answer-divider"><span>RESPOSTA</span></div>
@@ -281,10 +261,7 @@ R: Resposta 3"></textarea>
         </article>
 
         <section id="ratingArea" class="rating-panel hidden">
-          <div class="rating-title">
-            <strong>Como foi?</strong>
-            <span>Isso define quando esse cartão aparecerá novamente.</span>
-          </div>
+          <div class="rating-title"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
 
           <div class="rating-grid">
             <button class="rating again" data-rating="again" type="button"><span class="rating-icon">×</span><div><strong>Errei</strong><small>Rever logo</small></div><kbd>1</kbd></button>
