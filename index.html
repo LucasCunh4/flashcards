@@ -15,11 +15,8 @@
   <div class="bg-glow glow-1"></div><div class="bg-glow glow-2"></div>
 
   <header class="topbar">
-    <div class="brand">
-      <div class="logo">✦</div>
-      <div><h1>Flashcards</h1><p>Aprenda melhor. Revise no momento certo.</p></div>
-    </div>
-    <button id="themeBtn" class="icon-btn" type="button" title="Alternar tema">☾</button>
+    <div class="brand"><div class="logo">✦</div><div><h1>Flashcards</h1><p>Aprenda melhor. Revise no momento certo.</p></div></div>
+    <button id="themeBtn" class="icon-btn" type="button" title="Alternar tema" aria-label="Alternar tema">☾</button>
   </header>
 
   <main class="app-shell">
@@ -31,252 +28,105 @@
     </section>
 
     <section class="panel actions-panel">
-      <div class="action-main">
-        <button id="studyBtn" class="btn primary big" type="button"><span>▶</span> Estudar agora</button>
-        <button id="newBtn" class="btn big" type="button">＋ Novo flashcard</button>
-      </div>
-
+      <div class="action-main"><button id="studyBtn" class="btn primary big" type="button"><span>▶</span> Estudar agora</button><button id="newBtn" class="btn big" type="button">＋ Novo flashcard</button></div>
       <div class="action-secondary">
-        <button id="prImportBtn" class="btn ghost" type="button">≡ Importar P/R</button>
-        <button id="shuffleBtn" class="btn ghost" type="button">⇄ Embaralhar</button>
-        <button id="exportBtn" class="btn ghost" type="button">↓ Backup</button>
-        <button id="importBtn" class="btn ghost" type="button">↑ Importar</button>
+        <button id="prImportBtn" class="btn ghost" type="button">≡ Importar P/R</button><button id="shuffleBtn" class="btn ghost" type="button">⇄ Embaralhar</button><button id="exportBtn" class="btn ghost" type="button">↓ Backup</button><button id="importBtn" class="btn ghost" type="button">↑ Importar</button>
         <input id="importInput" type="file" accept=".json,application/json" hidden>
       </div>
     </section>
 
-    <!-- IMPORTAR P/R -->
     <section id="prImportPanel" class="panel pr-import-panel hidden">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">IMPORTAÇÃO AUTOMÁTICA</span>
-          <h2>Importar perguntas e respostas</h2>
-          <p>Cole uma lista usando <strong>P:</strong> para pergunta e <strong>R:</strong> para resposta.</p>
-        </div>
-        <button id="closePrImportBtn" class="icon-btn small" type="button">×</button>
-      </div>
-
-      <div class="pr-example">
-        <span>FORMATO</span>
-        <code>P: Qual é a pergunta?<br>R: Esta é a resposta.<br><br>P: Outra pergunta?<br>R: Outra resposta.</code>
-      </div>
-
-      <div class="field pr-text-field">
-        <div class="field-head"><label for="prInput">Lista de flashcards</label><span>Separação automática</span></div>
-        <textarea id="prInput" rows="14" spellcheck="false" placeholder="P: Pergunta 1
-R: Resposta 1
-
-P: Pergunta 2
-R: Resposta 2"></textarea>
-      </div>
-
-      <div class="pr-toolbar">
-        <div id="prStatus" class="pr-status neutral"><strong>0</strong><span>flashcards identificados</span></div>
-        <div class="pr-actions">
-          <button id="clearPrBtn" class="btn ghost" type="button">Limpar</button>
-          <button id="savePrBtn" class="btn primary" type="button" disabled>Importar flashcards</button>
-        </div>
-      </div>
-
+      <div class="section-head"><div><span class="eyebrow">IMPORTAÇÃO AUTOMÁTICA</span><h2>Importar perguntas e respostas</h2><p>Cole uma lista usando <strong>P:</strong> para pergunta e <strong>R:</strong> para resposta.</p></div><button id="closePrImportBtn" class="icon-btn small" type="button">×</button></div>
+      <div class="pr-example"><span>FORMATO</span><code>P: Qual é a pergunta?<br>R: Esta é a resposta.<br><br>P: Outra pergunta?<br>R: Outra resposta.</code></div>
+      <div class="field pr-text-field"><div class="field-head"><label for="prInput">Lista de flashcards</label><span>Separação automática</span></div><textarea id="prInput" rows="14" spellcheck="false" placeholder="P: Pergunta 1&#10;R: Resposta 1&#10;&#10;P: Pergunta 2&#10;R: Resposta 2"></textarea></div>
+      <div class="pr-toolbar"><div id="prStatus" class="pr-status neutral"><strong>0</strong><span>flashcards identificados</span></div><div class="pr-actions"><button id="clearPrBtn" class="btn ghost" type="button">Limpar</button><button id="savePrBtn" class="btn primary" type="button" disabled>Importar flashcards</button></div></div>
       <div id="prError" class="pr-error hidden"></div>
-
-      <div id="prPreviewSection" class="pr-preview-section hidden">
-        <div class="pr-preview-head">
-          <div><span class="eyebrow">PRÉVIA</span><h3>Flashcards identificados</h3></div>
-          <span id="prPreviewInfo"></span>
-        </div>
-        <div id="prPreview" class="pr-preview"></div>
-      </div>
+      <div id="prPreviewSection" class="pr-preview-section hidden"><div class="pr-preview-head"><div><span class="eyebrow">PRÉVIA</span><h3>Flashcards identificados</h3></div><span id="prPreviewInfo"></span></div><div id="prPreview" class="pr-preview"></div></div>
     </section>
 
-    <!-- EDITOR -->
     <section id="editorPanel" class="panel editor hidden">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">EDITOR</span>
-          <h2 id="editorTitle">Novo flashcard</h2>
-          <p id="editorDesc">Crie a pergunta, resposta e adicione uma imagem se quiser.</p>
-        </div>
-        <button id="closeEditorBtn" class="icon-btn small" type="button">×</button>
-      </div>
-
-      <div class="editor-mode-bar">
-        <div><strong>Criação em lote</strong><span>Crie vários flashcards usando a mesma pergunta.</span></div>
-        <button id="bulkToggle" class="btn bulk-toggle" type="button">▦ Modo lote</button>
-      </div>
+      <div class="section-head"><div><span class="eyebrow">EDITOR</span><h2 id="editorTitle">Novo flashcard</h2><p id="editorDesc">Crie a pergunta, resposta e adicione uma imagem se quiser.</p></div><button id="closeEditorBtn" class="icon-btn small" type="button">×</button></div>
+      <div class="editor-mode-bar"><div><strong>Criação em lote</strong><span>Crie vários flashcards usando a mesma pergunta.</span></div><button id="bulkToggle" class="btn bulk-toggle" type="button">▦ Modo lote</button></div>
 
       <form id="cardForm">
         <input id="editId" type="hidden">
-
-        <div class="field">
-          <div class="field-head"><label for="question">Pergunta</label><span>Obrigatório</span></div>
-          <textarea id="question" rows="4" maxlength="5000" placeholder="O que você deseja memorizar?" required></textarea>
-        </div>
+        <div class="field"><div class="field-head"><label for="question">Pergunta</label><span>Obrigatório</span></div><textarea id="question" rows="4" maxlength="5000" placeholder="O que você deseja memorizar?" required></textarea></div>
 
         <div id="singleArea">
-          <div class="field">
-            <div class="field-head"><label for="answer">Resposta</label><span>Obrigatório</span></div>
-            <textarea id="answer" rows="6" maxlength="10000" placeholder="Digite a resposta..." required></textarea>
-          </div>
+          <div class="field"><div class="field-head"><label for="answer">Resposta</label><span>Obrigatório</span></div><textarea id="answer" rows="6" maxlength="10000" placeholder="Digite a resposta..." required></textarea></div>
 
           <div class="media-field">
             <div class="media-title"><strong>Imagem da pergunta</strong><span>Opcional · escolha foto ou código SVG</span></div>
-
-            <div class="media-tabs">
-              <button class="media-tab active" data-media="image" type="button">🖼 Imagem</button>
-              <button class="media-tab" data-media="svg" type="button">◇ Código SVG</button>
-            </div>
+            <div class="media-tabs"><button class="media-tab active" data-media="image" type="button">🖼 Imagem</button><button class="media-tab" data-media="svg" type="button">◇ Código SVG</button></div>
 
             <div id="imageControls">
-              <div class="image-buttons">
-                <label class="btn" for="imageInput">Escolher imagem</label>
-                <input id="imageInput" type="file" accept="image/*" hidden>
-                <button id="removeImageBtn" class="btn danger-soft hidden" type="button">Remover</button>
-              </div>
+              <div class="image-buttons"><label class="btn" for="imageInput">Escolher imagem</label><input id="imageInput" type="file" accept="image/*" hidden><button id="removeImageBtn" class="btn danger-soft hidden" type="button">Remover</button></div>
               <div id="imagePreviewWrap" class="image-preview hidden"><img id="imagePreview" alt="Prévia da imagem"></div>
             </div>
 
             <div id="svgControls" class="hidden">
               <textarea id="svgInput" class="svg-input" rows="7" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>'></textarea>
-              <div class="svg-actions">
-                <button id="previewSvgBtn" class="btn" type="button">Visualizar SVG</button>
-                <button id="clearSvgBtn" class="btn danger-soft" type="button">Limpar</button>
-              </div>
+              <div class="svg-actions"><button id="previewSvgBtn" class="btn" type="button">Visualizar SVG</button><button id="clearSvgBtn" class="btn danger-soft" type="button">Limpar</button></div>
               <div id="svgPreviewWrap" class="svg-preview hidden"><span>Prévia</span><img id="svgPreview" alt="Prévia do SVG"></div>
             </div>
           </div>
         </div>
 
-        <!-- LOTE -->
         <section id="bulkArea" class="bulk-area hidden">
-          <div class="bulk-header">
-            <div>
-              <span class="eyebrow">MODO LOTE</span>
-              <h3>Vários flashcards de uma vez</h3>
-              <p>Todos usarão a mesma pergunta. Cada imagem ou SVG terá sua própria resposta.</p>
-            </div>
-
-            <div class="bulk-add-buttons">
-              <label class="btn primary" for="bulkImageInput">＋ Fotos</label>
-              <input id="bulkImageInput" type="file" accept="image/*" multiple hidden>
-              <button id="openBulkSvgBtn" class="btn" type="button">＋ SVGs</button>
-            </div>
-          </div>
+          <div class="bulk-header"><div><span class="eyebrow">MODO LOTE</span><h3>Vários flashcards de uma vez</h3><p>Todos usarão a mesma pergunta. Cada imagem ou SVG terá sua própria resposta.</p></div><div class="bulk-add-buttons"><label class="btn primary" for="bulkImageInput">＋ Fotos</label><input id="bulkImageInput" type="file" accept="image/*" multiple hidden><button id="openBulkSvgBtn" class="btn" type="button">＋ SVGs</button></div></div>
 
           <div id="bulkSvgBox" class="bulk-svg-box hidden">
             <strong>Adicionar códigos SVG</strong>
             <p>Cole um ou vários códigos <code>&lt;svg&gt;...&lt;/svg&gt;</code>.</p>
-            <textarea id="bulkSvgInput" rows="10" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>
-
-<svg viewBox="0 0 540 180">...</svg>'></textarea>
-            <div class="svg-actions">
-              <button id="addBulkSvgBtn" class="btn primary" type="button">Adicionar SVGs</button>
-              <button id="cancelBulkSvgBtn" class="btn ghost" type="button">Fechar</button>
-            </div>
+            <textarea id="bulkSvgInput" rows="10" spellcheck="false" placeholder='<svg viewBox="0 0 540 180">...</svg>&#10;&#10;<svg viewBox="0 0 540 180">...</svg>'></textarea>
+            <div class="svg-actions"><button id="addBulkSvgBtn" class="btn primary" type="button">Adicionar SVGs</button><button id="cancelBulkSvgBtn" class="btn ghost" type="button">Fechar</button></div>
           </div>
 
           <div class="bulk-summary"><span id="bulkCount">Nenhum item adicionado</span><small>Fotos e SVGs podem ser usados juntos.</small></div>
           <div id="bulkItems" class="bulk-items"></div>
         </section>
 
-        <div class="form-actions">
-          <button id="cancelBtn" class="btn ghost" type="button">Cancelar</button>
-          <button class="btn primary" type="submit">Salvar</button>
-        </div>
+        <div class="form-actions"><button id="cancelBtn" class="btn ghost" type="button">Cancelar</button><button class="btn primary" type="submit">Salvar</button></div>
       </form>
     </section>
 
-    <!-- BIBLIOTECA -->
     <section id="cardsPanel" class="panel cards-panel">
       <div class="section-head list-head">
-        <div>
-          <span class="eyebrow">BIBLIOTECA</span>
-          <h2>Meus flashcards</h2>
-          <p id="listSubtitle">Nenhum cartão cadastrado.</p>
-        </div>
-
-        <div class="library-tools">
-          <div class="search-wrap">
-            <span>⌕</span>
-            <input id="searchInput" class="search" type="search" placeholder="Buscar flashcards...">
-          </div>
-
-          <button id="selectModeBtn" class="btn ghost" type="button">☑ Selecionar</button>
-        </div>
+        <div><span class="eyebrow">BIBLIOTECA</span><h2>Meus flashcards</h2><p id="listSubtitle">Nenhum cartão cadastrado.</p></div>
+        <div class="library-tools"><div class="search-wrap"><span>⌕</span><input id="searchInput" class="search" type="search" placeholder="Buscar flashcards..."></div><button id="selectModeBtn" class="btn ghost" type="button">☑ Selecionar</button></div>
       </div>
 
-      <!-- BARRA DE SELEÇÃO -->
-      <div id="selectionToolbar" class="selection-toolbar hidden">
-        <div class="selection-info">
-          <strong id="selectionCount">0</strong>
-          <span>selecionados</span>
-        </div>
-
-        <div class="selection-actions">
-          <button id="selectAllBtn" class="btn ghost" type="button">Selecionar tudo</button>
-          <button id="deleteSelectedBtn" class="btn delete-multiple" type="button" disabled>🗑 Excluir selecionados</button>
-          <button id="cancelSelectionBtn" class="btn ghost" type="button">Cancelar</button>
-        </div>
-      </div>
+      <div id="selectionToolbar" class="selection-toolbar hidden"><div class="selection-info"><strong id="selectionCount">0</strong><span>selecionados</span></div><div class="selection-actions"><button id="selectAllBtn" class="btn ghost" type="button">Selecionar tudo</button><button id="deleteSelectedBtn" class="btn delete-multiple" type="button" disabled>🗑 Excluir selecionados</button><button id="cancelSelectionBtn" class="btn ghost" type="button">Cancelar</button></div></div>
 
       <div id="cardList" class="card-list"></div>
-
-      <div id="emptyState" class="empty-state">
-        <div class="empty-visual">✦</div>
-        <h3>Comece seu primeiro flashcard</h3>
-        <p>Cadastre perguntas e deixe o sistema organizar as revisões para você.</p>
-        <button id="emptyNewBtn" class="btn primary" type="button">＋ Criar flashcard</button>
-      </div>
+      <div id="emptyState" class="empty-state"><div class="empty-visual">✦</div><h3>Comece seu primeiro flashcard</h3><p>Cadastre perguntas e deixe o sistema organizar as revisões para você.</p><button id="emptyNewBtn" class="btn primary" type="button">＋ Criar flashcard</button></div>
     </section>
   </main>
 
-  <!-- ESTUDO -->
   <section id="studyView" class="study-view" aria-hidden="true">
-    <header class="study-topbar">
-      <button id="exitStudyBtn" class="study-icon-btn" type="button">×</button>
+    <header class="study-topbar"><button id="exitStudyBtn" class="study-icon-btn" type="button">×</button><div class="study-progress-wrap"><div class="study-meta"><strong id="studyProgressText">1 de 10</strong><span id="studyDueText">0 concluídos</span></div><div class="progress"><div id="studyProgressBar"></div></div></div><button id="fullscreenBtn" class="study-icon-btn" type="button">⛶</button></header>
 
-      <div class="study-progress-wrap">
-        <div class="study-meta"><strong id="studyProgressText">1 de 10</strong><span id="studyDueText">0 concluídos</span></div>
-        <div class="progress"><div id="studyProgressBar"></div></div>
-      </div>
+    <div class="study-scroll"><main class="study-content">
+      <article class="study-card">
+        <section class="question-section"><div class="study-label"><span class="label-dot"></span>PERGUNTA</div><div id="studyQuestion" class="study-question"></div><div class="study-image-wrap"><img id="studyImage" class="study-image hidden" alt="Imagem da pergunta"></div></section>
+        <button id="showAnswerBtn" class="reveal-btn" type="button"><span>Mostrar resposta</span><span class="reveal-arrow">↓</span></button>
+        <section id="answerArea" class="answer-section hidden"><div class="answer-divider"><span>RESPOSTA</span></div><div id="studyAnswer" class="study-answer"></div></section>
+      </article>
 
-      <button id="fullscreenBtn" class="study-icon-btn" type="button">⛶</button>
-    </header>
-
-    <div class="study-scroll">
-      <main class="study-content">
-        <article class="study-card">
-          <section class="question-section">
-            <div class="study-label"><span class="label-dot"></span>PERGUNTA</div>
-            <div id="studyQuestion" class="study-question"></div>
-            <div class="study-image-wrap"><img id="studyImage" class="study-image hidden" alt="Imagem da pergunta"></div>
-          </section>
-
-          <button id="showAnswerBtn" class="reveal-btn" type="button"><span>Mostrar resposta</span><span class="reveal-arrow">↓</span></button>
-
-          <section id="answerArea" class="answer-section hidden">
-            <div class="answer-divider"><span>RESPOSTA</span></div>
-            <div id="studyAnswer" class="study-answer"></div>
-          </section>
-        </article>
-
-        <section id="ratingArea" class="rating-panel hidden">
-          <div class="rating-title"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
-
-          <div class="rating-grid">
-            <button class="rating again" data-rating="again" type="button"><span class="rating-icon">×</span><div><strong>Errei</strong><small>Rever logo</small></div><kbd>1</kbd></button>
-            <button class="rating hard" data-rating="hard" type="button"><span class="rating-icon">!</span><div><strong>Difícil</strong><small>Intervalo curto</small></div><kbd>2</kbd></button>
-            <button class="rating good" data-rating="good" type="button"><span class="rating-icon">✓</span><div><strong>Acertei</strong><small>Intervalo normal</small></div><kbd>3</kbd></button>
-            <button class="rating easy" data-rating="easy" type="button"><span class="rating-icon">★</span><div><strong>Fácil</strong><small>Intervalo maior</small></div><kbd>4</kbd></button>
-          </div>
-
-          <p class="shortcut-hint">Espaço para mostrar a resposta · 1–4 para avaliar</p>
-        </section>
-      </main>
-    </div>
+      <section id="ratingArea" class="rating-panel hidden">
+        <div class="rating-title"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
+        <div class="rating-grid">
+          <button class="rating again" data-rating="again" type="button"><span class="rating-icon">×</span><div><strong>Errei</strong><small>Rever logo</small></div><kbd>1</kbd></button>
+          <button class="rating hard" data-rating="hard" type="button"><span class="rating-icon">!</span><div><strong>Difícil</strong><small>Intervalo curto</small></div><kbd>2</kbd></button>
+          <button class="rating good" data-rating="good" type="button"><span class="rating-icon">✓</span><div><strong>Acertei</strong><small>Intervalo normal</small></div><kbd>3</kbd></button>
+          <button class="rating easy" data-rating="easy" type="button"><span class="rating-icon">★</span><div><strong>Fácil</strong><small>Intervalo maior</small></div><kbd>4</kbd></button>
+        </div>
+        <p class="shortcut-hint">Espaço para mostrar a resposta · 1–4 para avaliar</p>
+      </section>
+    </main></div>
   </section>
 
-  <div id="toast" class="toast"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
 </html>
