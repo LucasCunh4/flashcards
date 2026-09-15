@@ -114,7 +114,11 @@
       </article>
 
       <section id="ratingArea" class="rating-panel hidden">
-        <div class="rating-title"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
+        <div class="rating-title">
+          <div class="rating-copy"><strong>Como foi?</strong><span>Isso define quando esse cartão aparecerá novamente.</span></div>
+          <button id="studyFavoriteBtn" class="study-favorite-btn" type="button" aria-pressed="false">☆ Favoritar</button>
+        </div>
+
         <div class="rating-grid">
           <button class="rating again" data-rating="again" type="button"><span class="rating-icon">×</span><div><strong>Errei</strong><small>Rever logo</small></div><kbd>1</kbd></button>
           <button class="rating hard" data-rating="hard" type="button"><span class="rating-icon">!</span><div><strong>Difícil</strong><small>Intervalo curto</small></div><kbd>2</kbd></button>
