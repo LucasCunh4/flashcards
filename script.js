@@ -1,8 +1,8 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const els={total:$('#totalCount'),due:$('#dueCount'),mastered:$('#masteredCount'),today:$('#todayCount'),studyBtn:$('#studyBtn'),shuffleBtn:$('#shuffleBtn'),newBtn:$('#newBtn'),emptyNewBtn:$('#emptyNewBtn'),exportBtn:$('#exportBtn'),importBtn:$('#importBtn'),importInput:$('#importInput'),prImportBtn:$('#prImportBtn'),prImportPanel:$('#prImportPanel'),closePrImportBtn:$('#closePrImportBtn'),prInput:$('#prInput'),prStatus:$('#prStatus'),prError:$('#prError'),prPreviewSection:$('#prPreviewSection'),prPreview:$('#prPreview'),prPreviewInfo:$('#prPreviewInfo'),clearPrBtn:$('#clearPrBtn'),savePrBtn:$('#savePrBtn'),editor:$('#editorPanel'),editorTitle:$('#editorTitle'),editorDesc:$('#editorDesc'),bulkToggle:$('#bulkToggle'),form:$('#cardForm'),editId:$('#editId'),question:$('#question'),answer:$('#answer'),singleArea:$('#singleArea'),imageInput:$('#imageInput'),imageControls:$('#imageControls'),imagePreviewWrap:$('#imagePreviewWrap'),imagePreview:$('#imagePreview'),removeImage:$('#removeImageBtn'),svgControls:$('#svgControls'),svgInput:$('#svgInput'),previewSvgBtn:$('#previewSvgBtn'),clearSvgBtn:$('#clearSvgBtn'),svgPreviewWrap:$('#svgPreviewWrap'),svgPreview:$('#svgPreview'),bulkArea:$('#bulkArea'),bulkImageInput:$('#bulkImageInput'),bulkItems:$('#bulkItems'),bulkCount:$('#bulkCount'),openBulkSvgBtn:$('#openBulkSvgBtn'),bulkSvgBox:$('#bulkSvgBox'),bulkSvgInput:$('#bulkSvgInput'),addBulkSvgBtn:$('#addBulkSvgBtn'),cancelBulkSvgBtn:$('#cancelBulkSvgBtn'),closeEditor:$('#closeEditorBtn'),cancelBtn:$('#cancelBtn'),search:$('#searchInput'),list:$('#cardList'),empty:$('#emptyState'),listSubtitle:$('#listSubtitle'),cardsPanel:$('#cardsPanel'),selectModeBtn:$('#selectModeBtn'),selectionToolbar:$('#selectionToolbar'),selectionCount:$('#selectionCount'),selectAllBtn:$('#selectAllBtn'),deleteSelectedBtn:$('#deleteSelectedBtn'),cancelSelectionBtn:$('#cancelSelectionBtn'),studyView:$('#studyView'),exitStudy:$('#exitStudyBtn'),fullscreen:$('#fullscreenBtn'),studyProgressText:$('#studyProgressText'),studyDueText:$('#studyDueText'),studyProgressBar:$('#studyProgressBar'),studyQuestion:$('#studyQuestion'),studyImage:$('#studyImage'),showAnswer:$('#showAnswerBtn'),answerArea:$('#answerArea'),studyAnswer:$('#studyAnswer'),ratingArea:$('#ratingArea'),toast:$('#toast'),themeBtn:$('#themeBtn')};
+const els={total:$('#totalCount'),due:$('#dueCount'),mastered:$('#masteredCount'),today:$('#todayCount'),studyBtn:$('#studyBtn'),shuffleBtn:$('#shuffleBtn'),newBtn:$('#newBtn'),emptyNewBtn:$('#emptyNewBtn'),exportBtn:$('#exportBtn'),importBtn:$('#importBtn'),importInput:$('#importInput'),prImportBtn:$('#prImportBtn'),prImportPanel:$('#prImportPanel'),closePrImportBtn:$('#closePrImportBtn'),prInput:$('#prInput'),prStatus:$('#prStatus'),prError:$('#prError'),prPreviewSection:$('#prPreviewSection'),prPreview:$('#prPreview'),prPreviewInfo:$('#prPreviewInfo'),clearPrBtn:$('#clearPrBtn'),savePrBtn:$('#savePrBtn'),editor:$('#editorPanel'),editorTitle:$('#editorTitle'),editorDesc:$('#editorDesc'),bulkToggle:$('#bulkToggle'),form:$('#cardForm'),editId:$('#editId'),question:$('#question'),answer:$('#answer'),singleArea:$('#singleArea'),imageInput:$('#imageInput'),imageControls:$('#imageControls'),imagePreviewWrap:$('#imagePreviewWrap'),imagePreview:$('#imagePreview'),removeImage:$('#removeImageBtn'),svgControls:$('#svgControls'),svgInput:$('#svgInput'),previewSvgBtn:$('#previewSvgBtn'),clearSvgBtn:$('#clearSvgBtn'),svgPreviewWrap:$('#svgPreviewWrap'),svgPreview:$('#svgPreview'),bulkArea:$('#bulkArea'),bulkImageInput:$('#bulkImageInput'),bulkItems:$('#bulkItems'),bulkCount:$('#bulkCount'),openBulkSvgBtn:$('#openBulkSvgBtn'),bulkSvgBox:$('#bulkSvgBox'),bulkSvgInput:$('#bulkSvgInput'),addBulkSvgBtn:$('#addBulkSvgBtn'),cancelBulkSvgBtn:$('#cancelBulkSvgBtn'),closeEditor:$('#closeEditorBtn'),cancelBtn:$('#cancelBtn'),search:$('#searchInput'),list:$('#cardList'),empty:$('#emptyState'),listSubtitle:$('#listSubtitle'),cardsPanel:$('#cardsPanel'),selectModeBtn:$('#selectModeBtn'),selectionToolbar:$('#selectionToolbar'),selectionCount:$('#selectionCount'),selectAllBtn:$('#selectAllBtn'),deleteSelectedBtn:$('#deleteSelectedBtn'),cancelSelectionBtn:$('#cancelSelectionBtn'),studyView:$('#studyView'),exitStudy:$('#exitStudyBtn'),fullscreen:$('#fullscreenBtn'),studyProgressText:$('#studyProgressText'),studyDueText:$('#studyDueText'),studyProgressBar:$('#studyProgressBar'),studyQuestion:$('#studyQuestion'),studyImage:$('#studyImage'),showAnswer:$('#showAnswerBtn'),answerArea:$('#answerArea'),studyAnswer:$('#studyAnswer'),ratingArea:$('#ratingArea'),studyFavoriteBtn:$('#studyFavoriteBtn'),toast:$('#toast'),themeBtn:$('#themeBtn')};
 
-const DB_NAME='flashcards_app',STORE='cards',DAY=86400000,MINUTE=60000;
-let db,cards=[],editingImage=null,editingSvg=null,singleMediaMode='image',bulkMode=false,bulkEntries=[],parsedPrItems=[],prParseTimer,studyQueue=[],studyCurrent=null,studyCurrentEntry=null,sessionTotal=0,sessionDone=new Set(),favoriteCycle=[],favoriteIndex=0,cardsSinceFavorite=0,shuffled=false,toastTimer,selectionMode=false,selectedIds=new Set();
+const DB_NAME='flashcards_app',STORE='cards',DAY=86400000,MINUTE=60000,STUDY_SESSION_KEY='flashcards_study_session_v1';
+let db,cards=[],editingImage=null,editingSvg=null,singleMediaMode='image',bulkMode=false,bulkEntries=[],parsedPrItems=[],prParseTimer,studyQueue=[],studyCurrent=null,studyCurrentEntry=null,sessionCardIds=[],sessionTotal=0,sessionDone=new Set(),favoriteCycle=[],favoriteIndex=0,cardsSinceFavorite=0,shuffled=false,toastTimer,selectionMode=false,selectedIds=new Set();
 
 function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true})};r.onsuccess=()=>{db=r.result;resolve()};r.onerror=()=>reject(r.error)})}
 function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
@@ -20,8 +20,17 @@ function toast(msg){clearTimeout(toastTimer);els.toast.textContent=msg;els.toast
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function filteredCards(){const q=els.search.value.trim().toLowerCase();return cards.filter(c=>!q||c.question.toLowerCase().includes(q)||c.answer.toLowerCase().includes(q))}
 
-async function toggleFavorite(id){const i=cards.findIndex(c=>c.id===id);if(i<0)return;const c={...cards[i],favorite:!cards[i].favorite,updatedAt:now()};try{await dbPut(c);cards[i]=c;render();toast(c.favorite?'Adicionado aos favoritos.':'Removido dos favoritos.')}catch(e){console.error(e);toast('Não foi possível alterar o favorito.')}}
+/* SESSÃO PERSISTENTE */
+function saveStudySession(){if(!sessionCardIds.length)return;localStorage.setItem(STUDY_SESSION_KEY,JSON.stringify({version:1,sessionCardIds,queue:studyQueue,currentEntry:studyCurrentEntry,done:[...sessionDone],favoriteCycle,favoriteIndex,cardsSinceFavorite,savedAt:now()}))}
+function clearStudySession(){localStorage.removeItem(STUDY_SESSION_KEY)}
+function loadStudySession(){try{const raw=localStorage.getItem(STUDY_SESSION_KEY);if(!raw)return null;const s=JSON.parse(raw),valid=new Set(cards.map(c=>c.id));if(!s||!Array.isArray(s.sessionCardIds))throw new Error();const ids=s.sessionCardIds.filter(id=>valid.has(id));if(!ids.length){clearStudySession();return null}const queue=Array.isArray(s.queue)?s.queue.filter(x=>x&&valid.has(x.id)).map(x=>({id:x.id,bonus:!!x.bonus})):[],currentEntry=s.currentEntry&&valid.has(s.currentEntry.id)?{id:s.currentEntry.id,bonus:!!s.currentEntry.bonus}:null,done=Array.isArray(s.done)?s.done.filter(id=>ids.includes(id)):[],favNow=cards.filter(c=>c.favorite).map(c=>c.id),storedFav=Array.isArray(s.favoriteCycle)?s.favoriteCycle.filter(id=>favNow.includes(id)):[],fav=[...storedFav,...favNow.filter(id=>!storedFav.includes(id))];if(!currentEntry&&!queue.length&&done.length>=ids.length){clearStudySession();return null}return{sessionCardIds:ids,queue,currentEntry,done,favoriteCycle:fav,favoriteIndex:fav.length?(Number(s.favoriteIndex)||0)%fav.length:0,cardsSinceFavorite:Number(s.cardsSinceFavorite)||0}}catch(e){clearStudySession();return null}}
 
+/* FAVORITOS */
+function syncFavoriteCycle(){const next=favoriteCycle.length?favoriteCycle[favoriteIndex%favoriteCycle.length]:null,favs=cards.filter(c=>c.favorite).map(c=>c.id);favoriteCycle=[...favoriteCycle.filter(id=>favs.includes(id)),...favs.filter(id=>!favoriteCycle.includes(id))];if(!favoriteCycle.length)favoriteIndex=0;else if(next&&favoriteCycle.includes(next))favoriteIndex=favoriteCycle.indexOf(next);else favoriteIndex%=favoriteCycle.length}
+function updateStudyFavoriteButton(){const active=!!studyCurrent?.favorite;els.studyFavoriteBtn.classList.toggle('active',active);els.studyFavoriteBtn.textContent=active?'★ Favorita':'☆ Favoritar';els.studyFavoriteBtn.setAttribute('aria-pressed',String(active))}
+async function toggleFavorite(id){const i=cards.findIndex(c=>c.id===id);if(i<0)return;const c={...cards[i],favorite:!cards[i].favorite,updatedAt:now()};try{await dbPut(c);cards[i]=c;if(studyCurrent?.id===id)studyCurrent=c;syncFavoriteCycle();updateStudyFavoriteButton();saveStudySession();render();toast(c.favorite?'Adicionado aos favoritos.':'Removido dos favoritos.')}catch(e){console.error(e);toast('Não foi possível alterar o favorito.')}}
+
+/* SELEÇÃO */
 function setSelectionMode(on){selectionMode=on;if(!on)selectedIds.clear();els.selectionToolbar.classList.toggle('hidden',!on);els.selectModeBtn.classList.toggle('active-toggle',on);els.selectModeBtn.textContent=on?'✓ Selecionando':'☑ Selecionar';updateSelectionToolbar();render()}
 function updateSelectionToolbar(){const v=filteredCards(),n=v.filter(c=>selectedIds.has(c.id)).length;els.selectionCount.textContent=selectedIds.size;els.deleteSelectedBtn.disabled=!selectedIds.size;els.selectAllBtn.textContent=v.length&&n===v.length?'Desmarcar visíveis':'Selecionar tudo'}
 function toggleSelected(id,checked){checked?selectedIds.add(id):selectedIds.delete(id);updateSelectionToolbar();document.querySelector(`[data-card-id="${id}"]`)?.classList.toggle('selected',checked)}
@@ -29,6 +38,7 @@ els.selectModeBtn.onclick=()=>{if(!cards.length)return toast('Não há flashcard
 els.selectAllBtn.onclick=()=>{const v=filteredCards();if(!v.length)return;const all=v.every(c=>selectedIds.has(c.id));v.forEach(c=>all?selectedIds.delete(c.id):selectedIds.add(c.id));updateSelectionToolbar();render()};
 els.deleteSelectedBtn.onclick=async()=>{const ids=[...selectedIds];if(!ids.length)return;const text=ids.length===1?'Excluir o flashcard selecionado?':`Excluir os ${ids.length} flashcards selecionados?`;if(!confirm(`${text}\n\nEsta ação não pode ser desfeita.`))return;try{await dbBulkDelete(ids);selectedIds.clear();selectionMode=false;els.selectionToolbar.classList.add('hidden');els.selectModeBtn.classList.remove('active-toggle');els.selectModeBtn.textContent='☑ Selecionar';await loadCards();toast(`${ids.length} ${ids.length===1?'flashcard excluído':'flashcards excluídos'}.`)}catch(e){console.error(e);toast('Não foi possível excluir os flashcards.')}};
 
+/* IMPORTAÇÃO P/R */
 function parsePR(text){const lines=text.replace(/\r/g,'').split('\n'),items=[];let current=null,mode=null;const finish=()=>{if(!current)return;current.question=current.question.trim();current.answer=current.answer.trim();items.push(current);current=null;mode=null};lines.forEach((line,index)=>{const p=line.match(/^\s*P\s*:\s*(.*)$/i),r=line.match(/^\s*R\s*:\s*(.*)$/i);if(p){finish();current={question:p[1]||'',answer:'',line:index+1};mode='question';return}if(r){if(!current)current={question:'',answer:r[1]||'',line:index+1};else current.answer=r[1]||'';mode='answer';return}if(!current||!mode)return;if(line.trim()){if(mode==='question')current.question+=(current.question?'\n':'')+line.trimEnd();else current.answer+=(current.answer?'\n':'')+line.trimEnd()}});finish();const errors=[];items.forEach((x,i)=>{if(!x.question)errors.push(`Flashcard ${i+1}: pergunta vazia.`);else if(!x.answer)errors.push(`Flashcard ${i+1}: resposta vazia.`)});return{items,errors}}
 function openPrImporter(){closeEditor();els.prImportPanel.classList.remove('hidden');els.prImportPanel.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>els.prInput.focus(),200)}
 function closePrImporter(){els.prImportPanel.classList.add('hidden')}
@@ -36,13 +46,16 @@ function updatePrPreview(){const raw=els.prInput.value,{items,errors}=parsePR(ra
 els.prImportBtn.onclick=openPrImporter;els.closePrImportBtn.onclick=closePrImporter;els.prInput.addEventListener('input',()=>{clearTimeout(prParseTimer);prParseTimer=setTimeout(updatePrPreview,180)});els.clearPrBtn.onclick=()=>{els.prInput.value='';updatePrPreview()};
 els.savePrBtn.onclick=async()=>{const {items,errors}=parsePR(els.prInput.value);if(!items.length||errors.length)return toast('Confira as perguntas e respostas.');const t=now();await dbBulkAdd(items.map(x=>({question:x.question,answer:x.answer,image:null,svg:null,favorite:false,createdAt:t,updatedAt:t,reviews:0,lapses:0,ease:2.3,interval:0,nextReview:0,lastReviewed:null})));els.prInput.value='';updatePrPreview();closePrImporter();await loadCards();toast(`${items.length} ${items.length===1?'flashcard importado':'flashcards importados'}.`)};
 
+/* SVG */
 function sanitizeSvg(raw){if(!raw?.trim())throw new Error('SVG vazio');const doc=new DOMParser().parseFromString(raw.trim(),'image/svg+xml');if(doc.querySelector('parsererror')||doc.documentElement.tagName.toLowerCase()!=='svg')throw new Error('SVG inválido');const root=doc.documentElement;'script,foreignObject,iframe,object,embed,link,meta,audio,video'.split(',').forEach(tag=>root.querySelectorAll(tag).forEach(el=>el.remove()));[root,...root.querySelectorAll('*')].forEach(el=>[...el.attributes].forEach(attr=>{const name=attr.name.toLowerCase(),value=attr.value.trim();if(name.startsWith('on'))el.removeAttribute(attr.name);if((name==='href'||name==='xlink:href')&&value&&!value.startsWith('#'))el.removeAttribute(attr.name);if(name==='style'&&/url\s*\(|expression\s*\(/i.test(value))el.removeAttribute(attr.name)}));if(!root.getAttribute('xmlns'))root.setAttribute('xmlns','http://www.w3.org/2000/svg');return new XMLSerializer().serializeToString(root)}
 function extractSvgs(raw){if(!raw.trim())return[];const doc=new DOMParser().parseFromString(`<body>${raw}</body>`,'text/html');return[...doc.body.querySelectorAll('svg')].filter(svg=>!svg.parentElement?.closest('svg')).map(svg=>sanitizeSvg(svg.outerHTML))}
 
+/* RENDER */
 async function loadCards(){cards=await dbGetAll();render()}
 function render(){const filtered=filteredCards(),due=cards.filter(isDue).length,mastered=cards.filter(c=>(c.interval||0)>=21).length,today=cards.filter(c=>c.lastReviewed&&sameDay(c.lastReviewed,Date.now())).length,q=els.search.value.trim();els.total.textContent=cards.length;els.due.textContent=due;els.mastered.textContent=mastered;els.today.textContent=today;els.studyBtn.innerHTML=cards.length?`<span>▶</span> Estudar agora <b>${cards.length}</b>`:'<span>▶</span> Estudar agora';els.listSubtitle.textContent=cards.length?`${cards.length} ${cards.length===1?'cartão cadastrado':'cartões cadastrados'}.`:'Nenhum cartão cadastrado.';els.list.innerHTML='';els.empty.classList.toggle('hidden',cards.length>0||q.length>0);if(!filtered.length&&q){const d=document.createElement('div');d.className='empty-state';d.innerHTML='<div class="empty-visual">⌕</div><h3>Nada encontrado</h3><p>Tente buscar por outro termo.</p>';els.list.appendChild(d)}else filtered.sort((a,b)=>(isDue(b)-isDue(a))||((a.nextReview||0)-(b.nextReview||0))).forEach(c=>els.list.appendChild(cardRow(c)));updateSelectionToolbar()}
 function cardRow(c){const row=document.createElement('article');row.className='list-card'+(selectionMode?' selecting':'')+(selectedIds.has(c.id)?' selected':'');row.dataset.cardId=c.id;if(selectionMode){const box=document.createElement('label'),cb=document.createElement('input');box.className='select-box';cb.type='checkbox';cb.checked=selectedIds.has(c.id);cb.setAttribute('aria-label','Selecionar flashcard');cb.onchange=()=>toggleSelected(c.id,cb.checked);box.appendChild(cb);row.appendChild(box)}const src=cardMedia(c),media=src?Object.assign(document.createElement('img'),{className:'thumb',src,alt:''}):Object.assign(document.createElement('div'),{className:'thumb-placeholder',textContent:'✦'}),content=document.createElement('div'),q=document.createElement('div'),a=document.createElement('div'),meta=document.createElement('div'),status=document.createElement('span'),rev=document.createElement('span');content.className='list-content';q.className='list-question';q.textContent=c.question;a.className='list-answer';a.textContent=c.answer;meta.className='list-meta';status.className='badge'+(isDue(c)?' due':'');status.textContent=isDue(c)?'Revisar agora':`Revisão: ${fmtDate(c.nextReview)}`;rev.className='badge';rev.textContent=`${c.reviews||0} revisões`;meta.append(status,rev);if(c.svg){const b=document.createElement('span');b.className='badge';b.textContent='SVG';meta.appendChild(b)}if(c.favorite){const b=document.createElement('span');b.className='badge favorite-badge';b.textContent='★ Favorito';meta.appendChild(b)}content.append(q,a,meta);row.append(media,content);if(!selectionMode){const actions=document.createElement('div'),favorite=document.createElement('button'),edit=document.createElement('button'),del=document.createElement('button');actions.className='card-actions';favorite.className='small-btn favorite-btn'+(c.favorite?' active':'');favorite.type='button';favorite.title=c.favorite?'Remover dos favoritos':'Adicionar aos favoritos';favorite.setAttribute('aria-label',favorite.title);favorite.textContent=c.favorite?'★':'☆';favorite.onclick=()=>toggleFavorite(c.id);edit.className='small-btn';edit.type='button';edit.textContent='✎';edit.title='Editar';edit.onclick=()=>openEditor(c.id);del.className='small-btn delete';del.type='button';del.textContent='⌫';del.title='Excluir';del.onclick=()=>removeCard(c.id);actions.append(favorite,edit,del);row.appendChild(actions)}return row}
 
+/* EDITOR */
 function setSingleMediaMode(mode){singleMediaMode=mode;$$('[data-media]').forEach(btn=>btn.classList.toggle('active',btn.dataset.media===mode));els.imageControls.classList.toggle('hidden',mode!=='image');els.svgControls.classList.toggle('hidden',mode!=='svg')}
 $$('[data-media]').forEach(btn=>btn.onclick=()=>setSingleMediaMode(btn.dataset.media));
 function setBulkMode(on){bulkMode=on;els.bulkToggle.classList.toggle('active-toggle',on);els.bulkToggle.textContent=on?'✓ Modo lote ativado':'▦ Modo lote';els.singleArea.classList.toggle('hidden',on);els.bulkArea.classList.toggle('hidden',!on);els.answer.required=!on;if(!on){bulkEntries=[];els.bulkSvgInput.value='';els.bulkSvgBox.classList.add('hidden');renderBulkEntries()}}
@@ -63,25 +76,305 @@ els.form.onsubmit=async e=>{e.preventDefault();const question=els.question.value
 els.imageInput.onchange=async()=>{const file=els.imageInput.files[0];els.imageInput.value='';if(!file)return;try{editingImage=await imageToDataURL(file);updateImagePreview();toast('Imagem adicionada.')}catch(e){console.error(e);toast('Não consegui abrir a imagem.')}};els.removeImage.onclick=()=>{editingImage=null;updateImagePreview()};els.newBtn.onclick=()=>openEditor();els.emptyNewBtn.onclick=()=>openEditor();els.closeEditor.onclick=closeEditor;els.cancelBtn.onclick=closeEditor;els.search.oninput=render;
 async function removeCard(id){if(!confirm('Excluir este flashcard?'))return;await dbDelete(id);selectedIds.delete(id);await loadCards();toast('Flashcard excluído.')}
 
-function startStudy(){if(!cards.length)return toast('Não há flashcards para estudar.');if(selectionMode)setSelectionMode(false);let pending=cards.filter(isDue).map(c=>({id:c.id,bonus:false})),remaining=cards.filter(c=>!isDue(c)).map(c=>({id:c.id,bonus:false}));favoriteCycle=cards.filter(c=>c.favorite).map(c=>c.id);if(shuffled){shuffle(pending);shuffle(remaining);shuffle(favoriteCycle)}studyQueue=[...pending,...remaining];favoriteIndex=0;cardsSinceFavorite=0;sessionTotal=studyQueue.length;sessionDone=new Set();studyCurrent=null;studyCurrentEntry=null;els.studyView.classList.add('active');els.studyView.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';nextStudyCard()}
-function nextStudyCard(){let entry=null;if(favoriteCycle.length&&cardsSinceFavorite>=3){entry={id:favoriteCycle[favoriteIndex],bonus:true};favoriteIndex=(favoriteIndex+1)%favoriteCycle.length;cardsSinceFavorite=0}else if(studyQueue.length){entry=studyQueue.shift();cardsSinceFavorite++}else return finishStudy();studyCurrentEntry=entry;studyCurrent=cards.find(c=>c.id===entry.id);if(!studyCurrent)return nextStudyCard();els.studyQuestion.textContent=studyCurrent.question;els.studyAnswer.textContent=studyCurrent.answer;const media=cardMedia(studyCurrent);els.studyImage.classList.toggle('hidden',!media);if(media)els.studyImage.src=media;else els.studyImage.removeAttribute('src');els.answerArea.classList.add('hidden');els.ratingArea.classList.add('hidden');els.showAnswer.classList.remove('hidden');updateStudyProgress();document.querySelector('.study-scroll')?.scrollTo({top:0,behavior:'auto'})}
-function revealAnswer(){if(!studyCurrent||!els.answerArea.classList.contains('hidden'))return;els.answerArea.classList.remove('hidden');els.ratingArea.classList.remove('hidden');els.showAnswer.classList.add('hidden');requestAnimationFrame(()=>els.answerArea.scrollIntoView({behavior:'smooth',block:'nearest'}))}
-function updateStudyProgress(){const done=sessionDone.size,pct=sessionTotal?Math.round(done/sessionTotal*100):0;if(studyCurrentEntry?.bonus){els.studyProgressText.textContent='★ Favorito extra';els.studyDueText.textContent=`${done} de ${sessionTotal} concluídos`}else{els.studyProgressText.textContent=`${Math.min(done+1,sessionTotal)} de ${sessionTotal}`;els.studyDueText.textContent=`${done} ${done===1?'concluído':'concluídos'}`}els.studyProgressBar.style.width=`${pct}%`}
-async function rateCard(rating){if(!studyCurrent||!studyCurrentEntry)return;const entry=studyCurrentEntry,c={...studyCurrent},t=now(),prevReviews=c.reviews||0,ease=c.ease||2.3,interval=c.interval||0;c.reviews=prevReviews+1;c.lastReviewed=t;if(rating==='again'){c.lapses=(c.lapses||0)+1;c.ease=Math.max(1.3,ease-.2);c.interval=0;c.nextReview=t+10*MINUTE;if(!entry.bonus)studyQueue.push({id:c.id,bonus:false})}else if(rating==='hard'){c.ease=Math.max(1.3,ease-.15);c.interval=Math.max(1,interval?Math.round(interval*1.25):1);c.nextReview=t+c.interval*DAY;if(!entry.bonus)sessionDone.add(c.id)}else if(rating==='good'){c.ease=Math.min(3.2,ease+.05);c.interval=prevReviews===0?1:prevReviews===1?3:Math.max(2,Math.round(Math.max(1,interval)*c.ease));c.nextReview=t+c.interval*DAY;if(!entry.bonus)sessionDone.add(c.id)}else{c.ease=Math.min(3.4,ease+.12);c.interval=prevReviews===0?4:prevReviews===1?7:Math.max(4,Math.round(Math.max(1,interval)*c.ease*1.5));c.nextReview=t+c.interval*DAY;if(!entry.bonus)sessionDone.add(c.id)}await dbPut(c);const i=cards.findIndex(x=>x.id===c.id);if(i>=0)cards[i]=c;studyCurrent=null;studyCurrentEntry=null;nextStudyCard()}
-function finishStudy(){studyCurrent=null;studyCurrentEntry=null;els.studyProgressBar.style.width='100%';els.studyProgressText.textContent=`${sessionTotal} de ${sessionTotal}`;els.studyDueText.textContent='Sessão concluída';setTimeout(()=>{closeStudy();render();toast('Sessão concluída!')},250)}
-function closeStudy(){els.studyView.classList.remove('active');els.studyView.setAttribute('aria-hidden','true');document.body.style.overflow='';studyQueue=[];studyCurrent=null;studyCurrentEntry=null;favoriteCycle=[];favoriteIndex=0;cardsSinceFavorite=0;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}
-els.studyBtn.onclick=startStudy;els.showAnswer.onclick=revealAnswer;els.exitStudy.onclick=closeStudy;$$('.rating').forEach(b=>b.onclick=()=>rateCard(b.dataset.rating));
-els.shuffleBtn.onclick=()=>{shuffled=!shuffled;els.shuffleBtn.classList.toggle('active-toggle',shuffled);els.shuffleBtn.textContent=shuffled?'✓ Embaralhado':'⇄ Embaralhar';toast(shuffled?'Ordem aleatória ativada.':'Ordem aleatória desativada.')};
-els.fullscreen.onclick=async()=>{try{if(!document.fullscreenElement)await els.studyView.requestFullscreen();else await document.exitFullscreen()}catch(e){toast('Tela cheia não está disponível neste navegador.')}};
-document.addEventListener('keydown',e=>{if(!els.studyView.classList.contains('active'))return;if(e.code==='Space'){e.preventDefault();revealAnswer();return}if(!els.ratingArea.classList.contains('hidden')&&['1','2','3','4'].includes(e.key)){e.preventDefault();rateCard(['again','hard','good','easy'][Number(e.key)-1])}if(e.key==='Escape'&&!document.fullscreenElement)closeStudy()});
+/* ESTUDO */
+function openStudyView(){els.studyView.classList.add('active');els.studyView.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 
+function startStudy(){
+  if(!cards.length)return toast('Não há flashcards para estudar.');
+  if(selectionMode)setSelectionMode(false);
+
+  const saved=loadStudySession();
+  if(saved)return resumeStudy(saved);
+
+  let pending=cards.filter(isDue).map(c=>({id:c.id,bonus:false})),
+      remaining=cards.filter(c=>!isDue(c)).map(c=>({id:c.id,bonus:false}));
+
+  favoriteCycle=cards.filter(c=>c.favorite).map(c=>c.id);
+  if(shuffled){shuffle(pending);shuffle(remaining);shuffle(favoriteCycle)}
+
+  studyQueue=[...pending,...remaining];
+  sessionCardIds=studyQueue.map(x=>x.id);
+  sessionTotal=sessionCardIds.length;
+  sessionDone=new Set();
+  favoriteIndex=0;
+  cardsSinceFavorite=0;
+  studyCurrent=null;
+  studyCurrentEntry=null;
+
+  openStudyView();
+  nextStudyCard();
+}
+
+function resumeStudy(s){
+  sessionCardIds=s.sessionCardIds;
+  sessionTotal=sessionCardIds.length;
+  studyQueue=s.queue;
+  sessionDone=new Set(s.done);
+  favoriteCycle=s.favoriteCycle;
+  favoriteIndex=s.favoriteIndex;
+  cardsSinceFavorite=s.cardsSinceFavorite;
+  studyCurrentEntry=s.currentEntry;
+  studyCurrent=null;
+
+  openStudyView();
+
+  if(studyCurrentEntry){
+    studyCurrent=cards.find(c=>c.id===studyCurrentEntry.id);
+    if(studyCurrent){
+      showStudyCard();
+      toast('Sessão retomada.');
+      return;
+    }
+    studyCurrentEntry=null;
+  }
+
+  nextStudyCard();
+  toast('Sessão retomada.');
+}
+
+function nextStudyCard(){
+  let entry=null;
+
+  if(favoriteCycle.length&&cardsSinceFavorite>=3){
+    entry={id:favoriteCycle[favoriteIndex],bonus:true};
+    favoriteIndex=(favoriteIndex+1)%favoriteCycle.length;
+    cardsSinceFavorite=0;
+  }else if(studyQueue.length){
+    entry=studyQueue.shift();
+    cardsSinceFavorite++;
+  }else return finishStudy();
+
+  studyCurrentEntry=entry;
+  studyCurrent=cards.find(c=>c.id===entry.id);
+
+  if(!studyCurrent){
+    studyCurrentEntry=null;
+    return nextStudyCard();
+  }
+
+  showStudyCard();
+}
+
+function showStudyCard(){
+  els.studyQuestion.textContent=studyCurrent.question;
+  els.studyAnswer.textContent=studyCurrent.answer;
+
+  const media=cardMedia(studyCurrent);
+  els.studyImage.classList.toggle('hidden',!media);
+  if(media)els.studyImage.src=media;
+  else els.studyImage.removeAttribute('src');
+
+  els.answerArea.classList.add('hidden');
+  els.ratingArea.classList.add('hidden');
+  els.showAnswer.classList.remove('hidden');
+
+  updateStudyFavoriteButton();
+  updateStudyProgress();
+  document.querySelector('.study-scroll')?.scrollTo({top:0,behavior:'auto'});
+  saveStudySession();
+}
+
+function revealAnswer(){
+  if(!studyCurrent||!els.answerArea.classList.contains('hidden'))return;
+
+  els.answerArea.classList.remove('hidden');
+  els.ratingArea.classList.remove('hidden');
+  els.showAnswer.classList.add('hidden');
+
+  updateStudyFavoriteButton();
+  requestAnimationFrame(()=>els.answerArea.scrollIntoView({behavior:'smooth',block:'nearest'}));
+  saveStudySession();
+}
+
+function updateStudyProgress(){
+  const done=sessionDone.size,pct=sessionTotal?Math.round(done/sessionTotal*100):0;
+
+  if(studyCurrentEntry?.bonus){
+    els.studyProgressText.textContent='★ Favorito extra';
+    els.studyDueText.textContent=`${done} de ${sessionTotal} concluídos`;
+  }else{
+    els.studyProgressText.textContent=`${Math.min(done+1,sessionTotal)} de ${sessionTotal}`;
+    els.studyDueText.textContent=`${done} ${done===1?'concluído':'concluídos'}`;
+  }
+
+  els.studyProgressBar.style.width=`${pct}%`;
+}
+
+async function rateCard(rating){
+  if(!studyCurrent||!studyCurrentEntry)return;
+
+  const entry=studyCurrentEntry,c={...studyCurrent},t=now(),
+        prevReviews=c.reviews||0,ease=c.ease||2.3,interval=c.interval||0;
+
+  c.reviews=prevReviews+1;
+  c.lastReviewed=t;
+
+  if(rating==='again'){
+    c.lapses=(c.lapses||0)+1;
+    c.ease=Math.max(1.3,ease-.2);
+    c.interval=0;
+    c.nextReview=t+10*MINUTE;
+    if(!entry.bonus)studyQueue.push({id:c.id,bonus:false});
+  }else if(rating==='hard'){
+    c.ease=Math.max(1.3,ease-.15);
+    c.interval=Math.max(1,interval?Math.round(interval*1.25):1);
+    c.nextReview=t+c.interval*DAY;
+    if(!entry.bonus)sessionDone.add(c.id);
+  }else if(rating==='good'){
+    c.ease=Math.min(3.2,ease+.05);
+    c.interval=prevReviews===0?1:prevReviews===1?3:Math.max(2,Math.round(Math.max(1,interval)*c.ease));
+    c.nextReview=t+c.interval*DAY;
+    if(!entry.bonus)sessionDone.add(c.id);
+  }else{
+    c.ease=Math.min(3.4,ease+.12);
+    c.interval=prevReviews===0?4:prevReviews===1?7:Math.max(4,Math.round(Math.max(1,interval)*c.ease*1.5));
+    c.nextReview=t+c.interval*DAY;
+    if(!entry.bonus)sessionDone.add(c.id);
+  }
+
+  await dbPut(c);
+
+  const i=cards.findIndex(x=>x.id===c.id);
+  if(i>=0)cards[i]=c;
+
+  studyCurrent=null;
+  studyCurrentEntry=null;
+
+  saveStudySession();
+  nextStudyCard();
+}
+
+function finishStudy(){
+  studyCurrent=null;
+  studyCurrentEntry=null;
+
+  els.studyProgressBar.style.width='100%';
+  els.studyProgressText.textContent=`${sessionTotal} de ${sessionTotal}`;
+  els.studyDueText.textContent='Sessão concluída';
+
+  clearStudySession();
+
+  setTimeout(()=>{
+    closeStudy(false);
+    render();
+    toast('Sessão concluída!');
+  },250);
+}
+
+function closeStudy(preserve=true){
+  if(preserve)saveStudySession();
+
+  els.studyView.classList.remove('active');
+  els.studyView.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+
+  studyQueue=[];
+  studyCurrent=null;
+  studyCurrentEntry=null;
+  sessionCardIds=[];
+  sessionTotal=0;
+  sessionDone=new Set();
+  favoriteCycle=[];
+  favoriteIndex=0;
+  cardsSinceFavorite=0;
+
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+}
+
+els.studyBtn.onclick=startStudy;
+els.showAnswer.onclick=revealAnswer;
+els.exitStudy.onclick=()=>closeStudy(true);
+els.studyFavoriteBtn.onclick=()=>{if(studyCurrent)toggleFavorite(studyCurrent.id)};
+$$('.rating').forEach(b=>b.onclick=()=>rateCard(b.dataset.rating));
+
+els.shuffleBtn.onclick=()=>{
+  shuffled=!shuffled;
+  els.shuffleBtn.classList.toggle('active-toggle',shuffled);
+  els.shuffleBtn.textContent=shuffled?'✓ Embaralhado':'⇄ Embaralhar';
+  toast(shuffled?'Ordem aleatória ativada.':'Ordem aleatória desativada.');
+};
+
+els.fullscreen.onclick=async()=>{
+  try{
+    if(!document.fullscreenElement)await els.studyView.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){toast('Tela cheia não está disponível neste navegador.')}
+};
+
+document.addEventListener('keydown',e=>{
+  if(!els.studyView.classList.contains('active'))return;
+  if(e.code==='Space'){e.preventDefault();revealAnswer();return}
+  if(!els.ratingArea.classList.contains('hidden')&&['1','2','3','4'].includes(e.key)){
+    e.preventDefault();
+    rateCard(['again','hard','good','easy'][Number(e.key)-1]);
+  }
+  if(e.key==='Escape'&&!document.fullscreenElement)closeStudy(true);
+});
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&els.studyView.classList.contains('active'))saveStudySession();
+});
+window.addEventListener('beforeunload',()=>{
+  if(els.studyView.classList.contains('active'))saveStudySession();
+});
+
+/* BACKUP */
 function download(name,text){const blob=new Blob([text],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-els.exportBtn.onclick=()=>{if(!cards.length)return toast('Não há flashcards.');download(`flashcards-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'Flashcards',version:6,exportedAt:new Date().toISOString(),cards}));toast('Backup exportado.')};
+els.exportBtn.onclick=()=>{if(!cards.length)return toast('Não há flashcards.');download(`flashcards-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'Flashcards',version:7,exportedAt:new Date().toISOString(),cards}));toast('Backup exportado.')};
 els.importBtn.onclick=()=>els.importInput.click();
-els.importInput.onchange=async()=>{const file=els.importInput.files[0];els.importInput.value='';if(!file)return;try{const data=JSON.parse(await file.text()),items=Array.isArray(data)?data:data.cards;if(!Array.isArray(items)||!items.every(c=>typeof c.question==='string'&&typeof c.answer==='string'))throw new Error('Formato inválido');const replace=confirm(`Backup encontrado com ${items.length} flashcard${items.length===1?'':'s'}.\n\nOK = substituir os cartões atuais\nCancelar = adicionar aos cartões atuais`);if(replace)await dbClear();await dbBulkAdd(items.map(c=>{let svg=null;if(c.svg){try{svg=sanitizeSvg(c.svg)}catch(e){svg=null}}return{question:c.question,answer:c.answer,image:c.image||null,svg,favorite:!!c.favorite,createdAt:c.createdAt||now(),updatedAt:c.updatedAt||now(),reviews:Number(c.reviews)||0,lapses:Number(c.lapses)||0,ease:Number(c.ease)||2.3,interval:Number(c.interval)||0,nextReview:Number(c.nextReview)||0,lastReviewed:c.lastReviewed?Number(c.lastReviewed):null}}));await loadCards();toast(`${items.length} ${items.length===1?'flashcard importado':'flashcards importados'}.`)}catch(e){console.error(e);toast('Esse arquivo não parece ser um backup válido.')}};
 
+els.importInput.onchange=async()=>{
+  const file=els.importInput.files[0];
+  els.importInput.value='';
+  if(!file)return;
+
+  try{
+    const data=JSON.parse(await file.text()),items=Array.isArray(data)?data:data.cards;
+    if(!Array.isArray(items)||!items.every(c=>typeof c.question==='string'&&typeof c.answer==='string'))throw new Error('Formato inválido');
+
+    const replace=confirm(`Backup encontrado com ${items.length} flashcard${items.length===1?'':'s'}.\n\nOK = substituir os cartões atuais\nCancelar = adicionar aos cartões atuais`);
+    if(replace){await dbClear();clearStudySession()}
+
+    await dbBulkAdd(items.map(c=>{
+      let svg=null;
+      if(c.svg){try{svg=sanitizeSvg(c.svg)}catch(e){svg=null}}
+
+      return{
+        question:c.question,answer:c.answer,image:c.image||null,svg,favorite:!!c.favorite,
+        createdAt:c.createdAt||now(),updatedAt:c.updatedAt||now(),
+        reviews:Number(c.reviews)||0,lapses:Number(c.lapses)||0,ease:Number(c.ease)||2.3,
+        interval:Number(c.interval)||0,nextReview:Number(c.nextReview)||0,
+        lastReviewed:c.lastReviewed?Number(c.lastReviewed):null
+      };
+    }));
+
+    await loadCards();
+    toast(`${items.length} ${items.length===1?'flashcard importado':'flashcards importados'}.`);
+  }catch(e){
+    console.error(e);
+    toast('Esse arquivo não parece ser um backup válido.');
+  }
+};
+
+/* TEMA / PWA */
 function applyTheme(theme){document.body.classList.toggle('dark',theme==='dark');els.themeBtn.textContent=theme==='dark'?'☀':'☾';localStorage.setItem('flashcards_theme',theme)}
 els.themeBtn.onclick=()=>applyTheme(document.body.classList.contains('dark')?'light':'dark');
-async function registerServiceWorker(){if(!('serviceWorker'in navigator))return;try{await navigator.serviceWorker.register('./service-worker.js')}catch(e){console.warn('Service Worker não registrado:',e)}}
 
-(async()=>{try{applyTheme(localStorage.getItem('flashcards_theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));await openDB();await loadCards();updatePrPreview();await registerServiceWorker()}catch(e){console.error(e);toast('Erro ao iniciar o app.')}})();
+async function registerServiceWorker(){
+  if(!('serviceWorker'in navigator))return;
+  try{await navigator.serviceWorker.register('./service-worker.js')}
+  catch(e){console.warn('Service Worker não registrado:',e)}
+}
+
+(async()=>{
+  try{
+    applyTheme(localStorage.getItem('flashcards_theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));
+    await openDB();
+    await loadCards();
+    updatePrPreview();
+    await registerServiceWorker();
+  }catch(e){
+    console.error(e);
+    toast('Erro ao iniciar o app.');
+  }
+})();
